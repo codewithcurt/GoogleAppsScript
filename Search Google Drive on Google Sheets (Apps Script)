@@ -1,0 +1,64 @@
+//Code.gs FILE
+
+function SearchFileForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('SearchFile').setTitle('Search Files');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function addMenu()
+{
+  var menu = SpreadsheetApp.getUi().createMenu('File Search');
+  menu.addItem('Search Files', 'SearchFileForm');
+  menu.addToUi(); 
+}
+
+function onOpen(e)
+{
+  addMenu(); 
+}
+
+function searchFiles(title) 
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var filesSheet = ss.getSheetByName("Files");
+  var lastRow = filesSheet.getLastRow()+1;
+  filesSheet.getRange('A2:F'+lastRow).clear();
+  var foundRecords = 'false';
+
+  var files = DriveApp.searchFiles("title contains '"+title+"' ");
+  while (files.hasNext()) 
+  {
+    var file = files.next();
+    var fileName = file.getName();
+    var fileLastUpdated = file.getLastUpdated();
+    var fileCreated = file.getDateCreated();
+    var fileURL = file.getUrl();
+    var fileMime = file.getMimeType();
+    var fileParents = file.getParents();
+    var firstFolderName = '';
+    while (fileParents.hasNext()) {
+      var firstFolderName = fileParents.next().getName();
+    }
+    if(firstFolderName != '')
+    {
+      filesSheet.appendRow([fileName, 
+                            fileURL, 
+                            fileCreated, 
+                            fileLastUpdated, 
+                            fileMime, 
+                            firstFolderName]);
+    }
+    foundRecords = 'true';
+  }
+
+  if(foundRecords == 'true')
+  {
+    return "<span style=\"font-weight: bold\" >Found Records</span>";
+  }
+  else
+  {
+    return "<span style=\"font-weight: bold\" >No Records Found</span>";
+  }
+  
+}

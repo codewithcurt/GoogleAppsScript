@@ -1,5 +1,3 @@
-//Code.gs FILE
-
 function SearchFileForm()
 { 
   var form = HtmlService.createHtmlOutputFromFile('SearchFile').setTitle('Search Files');

@@ -1,0 +1,20 @@
+function Backup() {
+
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var filesSheet = ss.getSheetByName("Files");
+  var lastRow = filesSheet.getLastRow();
+  var backupFiles = filesSheet.getRange("A5:B"+lastRow).getValues();
+  var destination_id = filesSheet.getRange('B1').getValue();  //GOOGLE DRIVE DIRECTORY BACKUP
+  var destination = DriveApp.getFolderById(destination_id);
+
+  for (var i = 0; i < backupFiles.length; i++)
+  {
+    var backupFileID = backupFiles[i][1];
+    var file = DriveApp.getFileById(backupFileID);
+    var filename = file.getName();
+    var dateString = Utilities.formatDate(new Date(), "GMT-4", "MMddyyyyhhmmssa")
+    file.makeCopy(filename + ' ' + dateString, destination);
+    var rowValue = i + 5;
+    filesSheet.getRange('C'+rowValue).setValue(dateString);
+  }
+}

@@ -1,0 +1,28 @@
+function submitForm() {
+
+  record_array = [];
+
+  var form = FormApp.openById('');  // Form ID
+  var formResponses = form.getResponses();
+  var lastResponse = formResponses.length;
+  var formTitle = form.getTitle();
+
+  var formResponse = formResponses[lastResponse - 1];
+  var itemResponses = formResponse.getItemResponses();
+
+  for (var j = 0; j < itemResponses.length; j++) {
+    var itemResponse = itemResponses[j];
+    var title = itemResponse.getItem().getTitle();
+    var answer = itemResponse.getResponse();
+
+    Logger.log(title);
+    Logger.log(answer);
+
+    record_array.push(answer);
+  }
+
+  MailApp.sendEmail("",  // Email Address
+                  "Response - " + formTitle,
+                  "From Name - " + record_array[0]);
+
+}

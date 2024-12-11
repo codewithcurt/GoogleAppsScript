@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"  />
+<script>
+function SubmitRecord()
+{
+  document.getElementById("displayReturn").innerHTML = "";
+  var title = document.getElementById("title").value;
+  google.script.run.withSuccessHandler(returnBack).searchFiles(title);
+}
+
+function returnBack(stringBack)
+{
+  document.getElementById("displayReturn").innerHTML = stringBack;
+}
+ 
+</script>
+  </head>
+  <body>
+  <form>
+  <div style="padding: 10px" >
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="title">Title</label>
+  <input type="text" id="title" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <input type="button" value="Submit" onclick="SubmitRecord()" class="btn btn-primary" />
+  </div> 
+  </div>
+  </form>
+  <div id="displayReturn" ></div>
+  </body>
+</html>

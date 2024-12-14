@@ -1,0 +1,37 @@
+function addMyName()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetOne = ss.getSheetByName("Sheet1");
+  sheetOne.getRange('A1').setValue('CodeWithCurt');
+}
+
+function addNumbers()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetOne = ss.getSheetByName("Sheet1");
+  var arrayOfNumbers = [[1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5]];
+  sheetOne.getRange('B1:F3').setValues(arrayOfNumbers);
+}
+
+function clearData()
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetOne = ss.getSheetByName("Sheet1");
+  sheetOne.getRange("A1:F3").clear();
+}
+
+function addMenu()
+{
+  var menu = SpreadsheetApp.getUi().createMenu('Custom');
+  menu.addItem('Add My Name', 'addMyName');
+  menu.addItem('Add Numbers', 'addNumbers');
+  menu.addSeparator();
+  menu.addSubMenu(SpreadsheetApp.getUi().createMenu('Sub Menu')
+           .addItem('Delete Data', 'clearData'));
+  menu.addToUi(); 
+}
+
+function onOpen(e)
+{
+  addMenu(); 
+}

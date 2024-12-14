@@ -1,0 +1,14 @@
+function doGet(e) {
+    const userEmail = Session.getActiveUser().getEmail();
+    var htmlOutput =  HtmlService.createTemplateFromFile('Index');
+    htmlOutput.email = userEmail;
+    return htmlOutput.evaluate();
+}
+
+function AddRecord(firstname, lastname, street, city, state, zip) {
+  const userEmail = Session.getActiveUser().getEmail();
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheetByName("DATA");
+  dataSheet.appendRow([firstname, lastname, street, city, state, zip, userEmail, new Date()]);
+  return 'Record Added';
+}

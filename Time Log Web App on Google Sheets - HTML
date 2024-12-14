@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js">
+</script>
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.css">
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <base target="_top">
+    <script>
+    function onFailure(error) {
+      document.getElementById('display').innerHTML = "ERROR: " + error.message;
+    }
+    function onSuccess(message) {
+      document.getElementById("job").value = '';
+      document.getElementById("note").value = '';
+      document.getElementById("startDate").value = '';
+      document.getElementById("endDate").value = '';
+      document.getElementById('display').innerHTML = message;
+    } 
+    function AddRecord()
+    {
+      document.getElementById('display').innerHTML = "";
+      var job = document.getElementById("job").value;
+      var note = document.getElementById("note").value;
+      var startDate = document.getElementById("startDate").value;
+      var endDate = document.getElementById("endDate").value;
+      if(job != '' && startDate != '' && endDate != '')
+      {
+        google.script.run.withSuccessHandler(onSuccess).
+                          withFailureHandler(onFailure).
+                          AddRecord(job, note, startDate, endDate);      
+      }
+      else
+      {
+        document.getElementById('display').innerHTML = "Not All Fields Filled Out";
+      }
+    }
+    function getJobs()
+    {
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+        var job = document.getElementById("job"); 
+        console.log(ar);
+        
+        let option = document.createElement("option");
+        option.value = "";
+        option.text = "";
+        job.appendChild(option);
+        
+        ar.forEach(function(item, index) 
+        {    
+          let option = document.createElement("option");
+          option.value = item[0];
+          option.text = item[0];
+          job.appendChild(option);    
+        });
+      
+      }).getJobs();   
+    }
+    </script>
+  </head>
+  <body>
+  <div style="padding: 10px;" > 
+  <h1>Time Log</h1>
+  <span>Logged In: <?= email ?></span>
+  <hr>
+  <form>
+  <div class="row">
+  <div class="form-group col-md-3">
+  <label for="job">Job</label>
+  <select class="form-control" id="job">
+  </select>
+  </div>
+  </div>
+  <div class="row">
+  <div class="form-group col-md-3">
+  <label for="note">Note</label>
+  <textarea id="note" class="form-control" style="width: 500px" ></textarea>
+  </div>
+  </div>
+  <div class="row">
+  <div class='form-group col-md-3'>
+  <label for="startDate" >Start Date</label>  
+  <input type='text' class="form-control" id='startDate' />
+  </div>
+  </div>
+  <div class="row">
+  <div class='form-group col-md-3'>
+  <label for="endDate" >End Date</label>  
+  <input type='text' class="form-control" id='endDate' />
+  </div>
+  </div>
+  <div class="row">
+  <div class="form-group col-md-3">
+  <input type="button" value="Add Time Log" class="btn btn-primary" onclick="AddRecord()" />
+    <span id="display" ></span>
+  </div>
+  </div>
+  </form> 
+  </div>
+  <script> 
+  getJobs();
+  $('#startDate').datetimepicker();
+  $('#endDate').datetimepicker();
+  </script>
+  </body>
+</html>

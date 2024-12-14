@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" 
+    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"  />
+    <base target="_top">
+    <script>
+    function onFailure(error) {
+      document.getElementById('display').innerHTML = "ERROR: " + error.message;
+    }
+    function onSuccess(message) {
+      document.getElementById("firstname").value = '';
+      document.getElementById("lastname").value = '';
+      document.getElementById("street").value = '';
+      document.getElementById("city").value = '';
+      document.getElementById("state").value = '';
+      document.getElementById("zip").value = '';
+      document.getElementById('display').innerHTML = message;
+    } 
+    function AddRow()
+    {
+      document.getElementById('display').innerHTML = "";
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+      var street = document.getElementById("street").value;
+      var city = document.getElementById("city").value;
+      var state = document.getElementById("state").value;
+      var zip = document.getElementById("zip").value;
+      google.script.run.withSuccessHandler(onSuccess).
+                        withFailureHandler(onFailure).
+                        AddRecord(firstname, lastname, street, city, state, zip);      
+    }
+    </script>
+  </head>
+  <body>
+  <div style="padding: 10px;" > 
+  <h1>Web App Login</h1>
+  <span>Logged In: <?= email ?></span>
+  <hr>
+  <form>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="firstname">First Name</label>
+  <input type="text" id="firstname" class="form-control" />
+  </div>
+  <div class="form-group col-md-3">
+  <label for="lastname">Last Name</label>
+  <input type="text" id="lastname" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="street">Street</label>
+  <input type="text" id="street" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="city">City</label>
+  <input type="text" id="city" class="form-control" />
+  </div> 
+  <div class="form-group col-md-2">
+  <label for="state">State</label>
+  <input type="text" id="state" class="form-control" />
+  </div> 
+  <div class="form-group col-md-1">
+  <label for="zip" >Zip</label>
+  <input type="text" id="zip" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-group col-md-12">
+  <input type="button" value="Add Record" class="btn btn-primary" onclick="AddRow()" />
+    <span id="display" ></span>
+  </div>
+  </form> 
+  </div>
+  </body>
+</html>

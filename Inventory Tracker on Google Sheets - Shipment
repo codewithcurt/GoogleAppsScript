@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"  />
+<script>
+function SubmitRecord()
+{
+  document.getElementById("displayReturn").innerHTML = "";
+  var orderNumber = document.getElementById("orderNumber").value;
+  var partNumber = document.getElementById("partNumber").value;
+  var location = document.getElementById("location").value;
+  var quantity = document.getElementById("quantity").value;
+  google.script.run.withSuccessHandler(returnBack).submitShipment(orderNumber, partNumber, location, quantity);
+  GetPartNumbers();
+}
+
+function returnBack(stringBack)
+{
+  document.getElementById("displayReturn").innerHTML = stringBack;
+  document.getElementById("orderNumber").value = '';
+  document.getElementById("partNumber").value = '';
+  document.getElementById("location").value = '';
+  document.getElementById("quantity").value = '';
+}
+
+function GetPartNumbers() 
+{
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    var part_number = document.getElementById("partNumber"); 
+    part_number.options.length = 0;
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    part_number.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item;
+      option.text = item;
+      part_number.appendChild(option);    
+    });
+  
+  }).getAllInventoryParts();
+};
+
+function GetLocations(partNumber)
+{
+  document.getElementById("quantity").value = ''; 
+  var location = document.getElementById("location"); 
+  location.options.length = 0;
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    
+    console.log(ar);
+ 
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    location.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item;
+      option.text = item;
+      location.appendChild(option);    
+    });
+  
+  }).getLocations(partNumber)
+};
+
+function GetQuantity(location)
+{
+  var partNumber = document.getElementById("partNumber").value;
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    console.log(ar);
+    document.getElementById("quantity").value = ar[0]; 
+
+  }).getQuantity(partNumber, location)
+};
+ 
+</script>
+  </head>
+  <body>
+  <form>
+  <div style="padding: 10px" >
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="orderNumber">Order Number</label>
+  <input type="text" id="orderNumber" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="partNumber">Part Number</label>
+  <select id="partNumber" class="form-control" onchange="GetLocations(this.value)" ></select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="location">Location</label>
+  <select id="location" class="form-control" onchange="GetQuantity(this.value)" ></select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="quantity">Quantity</label>
+  <input type="text" id="quantity" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <input type="button" value="Submit" onclick="SubmitRecord()" class="btn btn-primary" />
+  </div> 
+  </div>
+  </form>
+  <div id="displayReturn" ></div>
+  </div>
+  <script>GetPartNumbers(); </script>
+  </body>
+</html>

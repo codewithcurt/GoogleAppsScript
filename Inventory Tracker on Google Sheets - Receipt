@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"  />
+<script>
+function SubmitRecord()
+{
+  document.getElementById("displayReturn").innerHTML = "";
+  var poNumber = document.getElementById("poNumber").value;
+  var partNumber = document.getElementById("partNumber").value;
+  var location = document.getElementById("location").value;
+  var quantity = document.getElementById("quantity").value;
+  google.script.run.withSuccessHandler(returnBack).submitReceipt(poNumber, partNumber, location, quantity);
+}
+
+function returnBack(stringBack)
+{
+  document.getElementById("displayReturn").innerHTML = stringBack;
+  document.getElementById("poNumber").value = '';
+  document.getElementById("partNumber").value = '';
+  document.getElementById("location").value = '';
+  document.getElementById("quantity").value = '';
+}
+
+function GetPartNumbers() 
+{
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    var part_number = document.getElementById("partNumber"); 
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    part_number.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item[0];
+      option.text = item[0];
+      part_number.appendChild(option);    
+    });
+  
+  }).getAllPartNumbers();
+};
+
+function GetLocations()
+{
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    var location = document.getElementById("location"); 
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    location.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item[0];
+      option.text = item[0];
+      location.appendChild(option);    
+    });
+  
+  }).getAllLocations()
+};
+ 
+</script>
+  </head>
+  <body>
+  <form>
+  <div style="padding: 10px" >
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="poNumber">PO Number</label>
+  <input type="text" id="poNumber" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="partNumber">Part Number</label>
+  <select id="partNumber" class="form-control" ></select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="location">Location</label>
+  <select id="location" class="form-control" ></select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="quantity">Quantity</label>
+  <input type="text" id="quantity" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <input type="button" value="Submit" onclick="SubmitRecord()" class="btn btn-primary" />
+  </div> 
+  </div>
+  </form>
+  <div id="displayReturn" ></div>
+  </div>
+  <script>GetPartNumbers(); GetLocations(); </script>
+  </body>
+</html>

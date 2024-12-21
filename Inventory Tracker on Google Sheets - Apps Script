@@ -1,0 +1,325 @@
+function ReceiptForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('Receipt').setTitle('Receipt');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function ShipmentForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('Shipment').setTitle('Shipment');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function AdjustmentForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('Adjustment').setTitle('Adjustment');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function TransferForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('Transfer').setTitle('Transfer');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function addMenu()
+{
+  var menu = SpreadsheetApp.getUi().createMenu('Inventory Tracker');
+  menu.addItem('Receipt', 'ReceiptForm');
+  menu.addItem('Shipment', 'ShipmentForm');
+  menu.addItem('Transfer', 'TransferForm');
+  menu.addItem('Adjustment', 'AdjustmentForm');
+  menu.addItem('Delete Zero Inventory', 'DeleteZeroInventory');
+  menu.addToUi(); 
+}
+
+function onOpen(e)
+{
+  addMenu(); 
+}
+
+function getAllPartNumbers()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var partsSheet = ss.getSheetByName("Parts");
+  var [headers, ...data] = partsSheet.getDataRange().getValues();
+  return data;
+}
+
+function getAllInventoryParts()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var [headers, ...data] = inventorySheet.getDataRange().getValues();
+  partArray = []
+  data.forEach(function(item, index)
+  {
+    if(!partArray.includes(item[0]) && item[2] !== 0)
+    {
+      partArray.push(item[0]);
+    }
+  });
+  partArray.sort();
+  return partArray;
+}
+
+function getAllLocations()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var locationSheet = ss.getSheetByName("Locations");
+  var [headers, ...data] = locationSheet.getDataRange().getValues();
+  return data;
+}
+
+function getLocations(partNumber)
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var [headers, ...data] = inventorySheet.getDataRange().getValues();
+  var returnArray = [];
+  data.forEach(function(item, index) 
+  {
+    if(item[0] == partNumber && item[2] !== 0)
+    {
+      returnArray.push(item[1]);
+    }
+  });
+  returnArray.sort();
+  return returnArray;
+}
+
+function getQuantity(partNumber, location)
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var [headers, ...data] = inventorySheet.getDataRange().getValues();
+  var returnArray = [];
+    // CODE BELOW USED IN VIDEO
+  //data.forEach(function(item, index) 
+  //{
+
+    //(data[index][0] == partNumber && data[index][1] == location) ? returnArray.push(data[index][2]) : null; 
+
+  //});
+  
+  // BETTER CODE TO USE
+  for(var i = 0; i < data.length; i++)
+  {
+    if(data[i][0] == partNumber && data[i][1] == location)
+    {
+      returnArray.push(data[i][2]);
+      break;
+    }
+  } 
+  return returnArray;
+
+}
+
+function DeleteZeroInventory()
+{
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('OK to Delete Zero Inventory Parts?', ui.ButtonSet.YES_NO);
+
+  if (response == ui.Button.YES) 
+  {
+    var ss= SpreadsheetApp.getActiveSpreadsheet();
+    var inventorySheet = ss.getSheetByName("Inventory");
+    var lastRow = inventorySheet.getLastRow();
+    for (var j = 2; j <= lastRow; j++)
+    {
+      if(inventorySheet.getRange(j,3).getValue() === 0)
+      {
+        inventorySheet.deleteRow(j);
+        j--;
+      }
+    }
+  }  
+}
+
+function submitTransfer(partNumber, location_from, location_to, quantity)
+{  
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var logSheet = ss.getSheetByName("Log");
+  
+  if(partNumber != '' && location_from != '' && location_to != '' && quantity !== '')
+  {
+    var [headers, ...data] = inventorySheet.getDataRange().getValues();
+    
+    var foundRecord = false;
+    var errorOutput = '';
+    data.forEach(function(item, index) 
+    {    
+      if(data[index][0] == partNumber && data[index][1] == location_from)
+      {
+        var newQuantity = Number(data[index][2]) - Number(quantity); 
+        if(newQuantity < 0)
+        {
+          errorOutput = "<span style=\"color: red; font-weight: bold\" >Not enough Quantity From location.  Transaction Denied</span>"; 
+        }
+        else
+        {  
+          inventorySheet.getRange(index+2,3).setValue(newQuantity);
+        }
+        foundRecord = true;
+      }
+    });
+
+    if(errorOutput != '')
+    {
+      return errorOutput;
+    }
+
+    var [headers, ...data] = inventorySheet.getDataRange().getValues();
+    
+    var foundRecord = false;
+    data.forEach(function(item, index) 
+    {    
+      if(data[index][0] == partNumber && data[index][1] == location_to)
+      {
+        var newQuantity = Number(data[index][2]) + Number(quantity);   
+        inventorySheet.getRange(index+2,3).setValue(newQuantity);
+        foundRecord = true;
+      }
+    });
+    
+    if(foundRecord == false)
+    {
+      inventorySheet.appendRow([partNumber, location_to, quantity]);
+    }
+
+    logSheet.appendRow(['', 'Transfer', partNumber, location_from, location_to, quantity, new Date()]);
+    SpreadsheetApp.flush();
+    return "<span style=\"font-weight: bold\" >Record Saved</span>";
+    
+  }
+  else
+  {
+    return "<span style=\"color: red; font-weight: bold\" >Enter Required Data</span>";
+  }
+}
+
+function submitShipment(orderNumber, partNumber, location, quantity)
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var logSheet = ss.getSheetByName("Log");
+  
+  if(partNumber != '' && location != '' && quantity !== '')
+  { 
+    //LAST ROW ON INVENTORY SHEET
+    var [headers, ...data] = inventorySheet.getDataRange().getValues();
+    
+    var foundRecord = false;
+    var errorOutput = '';
+    data.forEach(function(item, index) 
+    {    
+      if(data[index][0] == partNumber && data[index][1] == location)
+      {
+        var newQuantity = Number(data[index][2]) - Number(quantity); 
+        if(newQuantity < 0)
+        {
+          errorOutput = "<span style=\"color: red; font-weight: bold\" >Not enough Quantity from location.  Transaction Denied</span>"; 
+        }
+        else
+        {  
+          inventorySheet.getRange(index+2,3).setValue(newQuantity);
+        }
+        foundRecord = true;
+      }
+    });
+
+    if(errorOutput != '')
+    {
+      return errorOutput;
+    }
+
+    logSheet.appendRow([orderNumber, 'Shipment', partNumber, location, '', quantity, new Date()]);
+    SpreadsheetApp.flush();
+    return "<span style=\"font-weight: bold\" >Record Saved</span>";     
+  }
+  else
+  {
+    return "<span style=\"color: red; font-weight: bold\" >Enter Required Data</span>";
+  }
+}
+
+function submitAdjustment(partNumber, location, quantity)
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var logSheet = ss.getSheetByName("Log");
+  
+  if(partNumber != '' && location != '' && quantity !== '')
+  { 
+    //LAST ROW ON INVENTORY SHEET
+    var [headers, ...data] = inventorySheet.getDataRange().getValues();
+
+    var foundRecord = false;
+    var errorOutput = '';
+    data.forEach(function(item, index) 
+    {    
+      if(data[index][0] == partNumber && data[index][1] == location)
+      {
+        if(Number(quantity) < 0)
+        {
+          errorOutput = "<span style=\"color: red; font-weight: bold\" >Quantity less then 0  Transaction Denied</span>"; 
+        }
+        else
+        {  
+          inventorySheet.getRange(index+2,3).setValue(quantity);
+        }
+        foundRecord = true;
+      }
+    });
+
+    if(errorOutput != '')
+    {
+      return errorOutput;
+    }
+
+    logSheet.appendRow(['', 'Adjustment', partNumber, location, '', quantity, new Date()]);
+    SpreadsheetApp.flush();
+    return "<span style=\"font-weight: bold\" >Record Saved</span>";     
+  }
+  else
+  {
+    return "<span style=\"color: red; font-weight: bold\" >Enter Required Data</span>";
+  } 
+}
+
+function submitReceipt(poNumber, partNumber, location, quantity)
+{
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var inventorySheet = ss.getSheetByName("Inventory");
+  var logSheet = ss.getSheetByName("Log");
+
+  if(partNumber != '' && location != '' && quantity !== '')
+  { 
+    var [headers, ...data] = inventorySheet.getDataRange().getValues();
+    
+    var foundRecord = false;
+    data.forEach(function(item, index) 
+    {    
+      if(data[index][0] == partNumber && data[index][1] == location)
+      {
+        var newQuantity = Number(data[index][2]) + Number(quantity);   
+        inventorySheet.getRange(index+2,3).setValue(newQuantity);
+        foundRecord = true;
+      }
+    });
+    
+    if(foundRecord == false)
+    {
+      inventorySheet.appendRow([partNumber, location, quantity]);
+    }
+
+    logSheet.appendRow([poNumber, 'Receipt', partNumber, '', location, quantity, new Date()]);
+    return "<span style=\"font-weight: bold\" >Record Saved</span>";  
+      
+  }
+  else
+  {
+    return "<span style=\"color: red; font-weight: bold\" >Enter Required Data</span>";
+  }
+}

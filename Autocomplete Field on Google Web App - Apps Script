@@ -1,0 +1,25 @@
+function doGet(e) {
+  return HtmlService.createTemplateFromFile('AutoComplete').evaluate();
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+function AddRecord(firstname, lastname, street, city, state, zip, email) {
+
+  var ss= SpreadsheetApp.getActiveSpreadsheet(); 
+  var autoCompleteSheet = ss.getSheetByName("FORM DATA");
+  autoCompleteSheet.appendRow([firstname, lastname, street, city, state, zip, email, new Date()]);
+  
+}
+
+function getStates()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var statesSheet = ss.getSheetByName("STATES");
+  var statesRange = statesSheet.getRange("A2:A51");
+  var statesValues = statesRange.getValues();  
+  return statesValues;
+
+}

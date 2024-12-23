@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script>
+    function GetFruit(color) 
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+
+    console.log(ar);
+    
+    fruit.length = 0;
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    fruit.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item;
+      option.text = item;
+      fruit.appendChild(option);    
+    });
+    
+    }).getFruits(color);
+    
+    };
+  </script>  
+  </head>
+  <body>
+    <h1>Web App Dependent Drop Down</h1>
+    <?var url = getUrl();?>
+    <form method="post" action="<?= url ?>" >
+      <label style="font-size: 20px" >Name</label><br>
+      <input type="text" name="name" style="font-size: 20px" /><br><br>
+      <label style="font-size: 20px" >Colors</label><br>
+      <select name="color" style="font-size: 20px" onchange="GetFruit(this.value)" >
+      <option value="" ></option>
+      <? for(var i = 0; i < colors.length; i++) { ?>      
+      <option value="<?= colors[i] ?>" ><?= colors[i] ?></option>
+      <? } ?>
+      </select><br><br>
+      <label style="font-size: 20px" >Fruit</label><br>
+      <select name="fruit" id="fruit" style="font-size: 20px" >
+      </select><br><br>
+      <input type="submit" name="submitButton" value="Submit" style="font-size: 20px" /> 
+      <span style="font-size: 20px" ><?= message ?></span>      
+    </form>
+  </body>
+</html>

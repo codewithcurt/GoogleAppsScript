@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" ></script>" 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.colorbox/1.4.33/example1/colorbox.css" >
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.colorbox/1.6.4/jquery.colorbox-min.js" ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" >
+    <script>
+    $( document ).ready(function() {
+      getData();
+    });
+    function getData() 
+    {
+
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+
+        console.log(ar);
+        var displayTable = '';
+        displayTable += '<table class=\"table\" id=\"mainTable\" >';
+        displayTable += "<tr>";
+        displayTable += "<th>Region</th>";
+        displayTable += "<th>Area</th>";
+        displayTable += "<th>Name</th>";
+        displayTable += "<th></th>";
+        displayTable += "</tr>";
+
+        ar.forEach(function(item, index) 
+        {
+          if(index > 0)
+          {
+            displayTable += "<tr>";
+            displayTable += "<td>"+item[0]+"</td>";
+            displayTable += "<td>"+item[1]+"</td>";
+            displayTable += "<td>"+item[2]+"</td>";
+            displayTable += "<td><input type=\"button\" value=\"States\" class=\"btn btn-primary\" onclick=\"showStates('"+item[0]+"')\" /></td>";
+            displayTable += "</tr>";
+          }    
+        });
+
+        displayTable += '</table>';     
+        document.getElementById("rowdata").innerHTML = displayTable;
+
+      }).getRegions();
+      
+    }
+    function showStates(region)
+    {
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+
+        console.log(ar);
+        var displayTable = "<div style=\"padding: 10px\" ><span style=\"font-weight: bold; font-size: 20px\" >Region: "+region+"</span>";
+        displayTable += '<table class=\"table\" id=\"mainTable\" >';
+        displayTable += "<tr>";
+        displayTable += "<th>States</th>";
+        displayTable += "<th>Tax Rate</th>";
+        displayTable += "</tr>";
+
+        ar.forEach(function(item, index) 
+        {
+            displayTable += "<tr>";
+            displayTable += "<td>"+item[0]+"</td>";
+            displayTable += "<td>"+item[1]+"</td>";
+            displayTable += "</tr>"; 
+        });
+
+        displayTable += '</table></div>';    
+        $.colorbox({html: displayTable});
+
+      }).getStates(region);
+    }  
+    </script>
+  </head>
+  <body>
+  <div id="rowdata"></div>
+  </body>
+</html>

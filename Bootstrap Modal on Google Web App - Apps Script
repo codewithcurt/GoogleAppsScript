@@ -1,0 +1,29 @@
+function doGet(e) {
+  return HtmlService.createTemplateFromFile('WebAppBoot').evaluate();
+}
+
+function getRegions()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var regionSheet = ss.getSheetByName("REGION");
+  var regionRange = regionSheet.getDataRange();
+  var regionValues = regionRange.getValues();  
+  return regionValues;
+
+}
+
+function getStates(region)
+{
+  var returnData = [];
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var statesSheet = ss.getSheetByName("STATES");
+  var getLastRow = statesSheet.getLastRow();
+  for(i = 2; i <= getLastRow; i++)
+  {
+    if(region == statesSheet.getRange(i, 1).getValue())
+    {
+      returnData.push([statesSheet.getRange(i,2).getValue(),statesSheet.getRange(i,3).getValue()])
+    }
+  }  
+  return returnData;
+}

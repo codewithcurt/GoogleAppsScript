@@ -1,0 +1,40 @@
+function doGet(e) {
+  var htmlOutput =  HtmlService.createTemplateFromFile('DisplaySheet');
+  return htmlOutput.evaluate();
+}
+
+function getSheetData(column)  
+{
+
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheetByName('Data'); 
+  var dataRange = dataSheet.getDataRange();
+  var dataValues = dataRange.getValues();
+
+  if(column !== '')
+  {
+    var headerArray = dataValues[0];
+    dataValues.shift();
+    var dataType = dataValues[0][column];
+
+    if(isNaN(dataType))
+    {
+      dataValues.sort(function (x, y) {
+        let a = x[column].toUpperCase(),
+            b = y[column].toUpperCase();
+        return a == b ? 0 : a > b ? 1 : -1;
+      });
+    }
+    else
+    {
+      dataValues.sort(function (x, y) {
+        return x[column] - y[column];
+      });
+    }  
+
+    dataValues.unshift(headerArray);
+  }
+
+  return dataValues;
+
+}

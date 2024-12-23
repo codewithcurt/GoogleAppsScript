@@ -1,0 +1,40 @@
+function AddAddressForm()
+{ 
+  var form = HtmlService.createHtmlOutputFromFile('Address').setTitle('Add Address');
+  SpreadsheetApp.getUi().showSidebar(form);
+}
+
+function addMenu()
+{
+  var menu = SpreadsheetApp.getUi().createMenu('Custom');
+  menu.addItem('Add Address', 'AddAddressForm');
+  menu.addToUi(); 
+}
+
+function onOpen(e)
+{
+  addMenu(); 
+}
+
+function AddRecord(first_name, last_name, street, city, state, zip) {
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheetByName("Data");
+  if(first_name != '' && last_name != '' && street != '' && 
+  city != '' && state != '' && zip != '')
+  {
+    dataSheet.appendRow([first_name, last_name, street, city, state, zip, new Date()]);
+    return "<span style=\"font-weight: bold\" >Record Saved</span>";
+  }
+  else
+  {
+    return "<span style=\"font-weight: bold; color: red\" >Not All Data Entered</span>";
+  }
+}
+
+function getAllStates()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var statesSheet = ss.getSheetByName("States");
+  var [headers, ...data] = statesSheet.getDataRange().getValues();
+  return data;
+}

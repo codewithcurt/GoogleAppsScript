@@ -1,0 +1,65 @@
+function mainFunction() 
+{
+  // *************************************************************************
+  // CODE WITH CURT 2/14/2021
+  // The code below will eventually not bring back the desired results.
+  // Over time Web sites get Updated and Upgraded losing the original HTML and CSS tags that
+  // are searched in the RegExp statements.
+  // *************************************************************************
+
+  clearRecords();
+
+  var url = "https://www.premierleague.com/tables";
+
+  var str = UrlFetchApp.fetch(url).getContentText();
+
+  const mainRegex = /<td class=\"team\" scope=\"row\">([\s\S]*?)<\/td>/gi;
+  var results = str.match(mainRegex);
+
+  const teamNamePass1 = /<span class=\"long\">([\s\S]*?)<\/span>/gi;
+  const teamNamePass2 = /(?<=<span class=\"long\">).*?(?=<\/span>)/gi;
+
+  const teamLogoPass = /(?<=img class=\"badge-image badge-image--25\" src=\").*?(?=\")/gi;
+
+  for(var i = 0; i < 20; i++)
+  {
+    Logger.log('content: ' + results[i]);
+    var team1NameString = results[i].match(teamNamePass1);
+    Logger.log('content: ' + team1NameString[0]);
+    var team2NameString = team1NameString[0].match(teamNamePass2);
+    Logger.log('content: ' + team2NameString[0]);
+
+    var team1Logo = results[i].match(teamLogoPass);
+    Logger.log('content: ' + team1Logo[0]);
+
+    addRecord(i+1, team2NameString[0], team1Logo[0]);
+  }
+}
+
+function clearRecords()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var tableSheet = ss.getSheetByName("TABLE");
+  tableSheet.getRange("A1:D20").clear();
+
+  var images = tableSheet.getImages();
+  for (var i = 0; i < images.length; i++)
+  {
+    var img = images[i];
+    img.remove();
+  }
+}
+
+
+function addRecord(count, team, logo) {
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var tableSheet = ss.getSheetByName("TABLE");
+  var currentRow = tableSheet.getLastRow();
+  var nextRow = currentRow + 1;
+  tableSheet.setRowHeight(nextRow, 30);
+  tableSheet.getRange(nextRow,1).setValue(count);
+  tableSheet.insertImage(logo, 2, nextRow);
+  tableSheet.getRange(nextRow,3).setValue(team);
+  tableSheet.getRange(nextRow,4).setValue(new Date());
+
+}

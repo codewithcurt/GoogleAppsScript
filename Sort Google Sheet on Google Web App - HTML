@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" >
+  <style>
+  .buttonToLink
+  {
+   background: none;
+   border: none;
+   color: blue
+  }
+  .buttonToLink:hover
+  {
+   background: none;
+   text-decoration: underline;
+  }
+  </style>
+  <script>
+  function GetRecords(column) 
+  {
+
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+
+      console.log(ar);
+      var displayTable = '<table class=\"table\" id=\"mainTable\" >';
+
+      ar.forEach(function(item, index) 
+      {
+        if(index == 0)
+        {
+          displayTable += "<tr>";
+          for(var i = 0; i < item.length; i++)
+          {
+            displayTable += "<th><input class=\"buttonToLink\" type=\"button\" value=\""+item[i]+"\" onclick=\"GetRecords("+i+")\" /></th>";
+          }
+          displayTable += "</tr>";
+
+        }
+        else
+        {
+          displayTable += "<tr>";
+          for(var i = 0; i < item.length; i++)
+          {
+            displayTable += "<td>"+item[i]+"</td>";
+          }
+          displayTable += "</tr>";
+        }
+   
+      });
+
+      displayTable += "</table>";     
+      document.getElementById("displayTable").innerHTML = displayTable;
+
+    }).getSheetData(column);
+    
+  }
+  </script>
+  </head>
+  <body>
+    <h1>Display Google Sheet Web App Sort</h1>
+    <div id="displayTable"></div>
+    <script>GetRecords('');</script>
+  </body>
+</html>

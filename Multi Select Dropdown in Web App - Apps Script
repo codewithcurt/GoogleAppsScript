@@ -1,0 +1,32 @@
+function doGet(e) {
+  var htmlOutput =  HtmlService.createTemplateFromFile('MultiSelect');
+  htmlOutput.message = '';
+  return htmlOutput.evaluate();
+}
+
+function doPost(e) {
+  
+  Logger.log(JSON.stringify(e));
+  
+  var name = e.parameters.name.toString();
+  var colors = e.parameters.colors.toString();
+  
+  AddRecord(name, colors);
+  
+  var htmlOutput =  HtmlService.createTemplateFromFile('MultiSelect');
+  htmlOutput.message = 'Record Added';
+  return htmlOutput.evaluate(); 
+  
+}
+
+function AddRecord(name, colors) {
+  var url = '';   //URL OF GOOGLE SHEET;
+  var ss= SpreadsheetApp.openByUrl(url);
+  var dataSheet = ss.getSheetByName("DATA");
+  dataSheet.appendRow([name, colors, new Date()]);
+}
+
+function getUrl() {
+ var url = ScriptApp.getService().getUrl();
+ return url;
+}

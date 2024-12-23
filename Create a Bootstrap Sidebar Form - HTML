@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+<link rel="stylesheet" 
+href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.1/css/bootstrap.min.css" />
+<style>
+.narrow
+{
+  margin-bottom: 0.5rem;
+}
+</style>
+<script>
+function SubmitRecord()
+{
+  document.getElementById("displayReturn").innerHTML = "";
+  var first_name = document.getElementById("first_name").value;
+  var last_name = document.getElementById("last_name").value;
+  var street = document.getElementById("street").value;
+  var city = document.getElementById("city").value;
+  var state = document.getElementById("state").value;
+  var zip = document.getElementById("zip").value;
+  google.script.run.withSuccessHandler(returnBack)
+  .AddRecord(first_name, last_name, street, city, state, zip);
+}
+
+function returnBack(stringBack)
+{
+  document.getElementById("displayReturn").innerHTML = stringBack;
+  document.getElementById("first_name").value = '';
+  document.getElementById("last_name").value = '';
+  document.getElementById("street").value = '';
+  document.getElementById("city").value = '';
+  document.getElementById("state").value = '';
+  document.getElementById("zip").value = '';
+}
+
+function GetStates()
+{
+  google.script.run.withSuccessHandler(function(ar) 
+  {
+    var state = document.getElementById("state"); 
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    state.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      option.value = item[1];
+      option.text = item[0];
+      state.appendChild(option);    
+    });
+  
+  }).getAllStates();
+};
+</script>
+  </head>
+  <body>
+  <form>
+  <div style="padding: 10px" >
+  <div class="form-row" >
+  <div class="form-group col-md-6 narrow" >
+  <label for="first_name" style="margin-bottom: 0rem" >First Name</label>
+  <input type="text" id="first_name" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row" >
+  <div class="form-group col-md-6 narrow" >
+  <label for="last_name" style="margin-bottom: 0rem" >Last Name</label>
+  <input type="text" id="last_name" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 narrow" >
+  <label for="street" style="margin-bottom: 0rem" >Street</label>
+  <input type="text" id="street" class="form-control" />
+  </div> 
+  </div>
+   <div class="form-row">
+  <div class="form-group col-md-6 narrow" >
+  <label for="city" style="margin-bottom: 0rem" >City</label>
+  <input type="text" id="city" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 narrow" >
+  <label for="state" style="margin-bottom: 0rem" >State</label>
+  <select id="state" class="form-control" ></select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 narrow" >
+  <label for="zip" style="margin-bottom: 0rem" >Zip</label>
+  <input type="text" id="zip" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 narrow" >
+  <input type="button" value="Submit" onclick="SubmitRecord()" class="btn btn-primary" />
+  </div> 
+  </div>
+  </form>
+  <div id="displayReturn" ></div>
+  </div>
+  <script>GetStates(); </script>
+  </body>
+</html>

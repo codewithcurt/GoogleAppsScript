@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script>
+    function AddRow()
+    {
+      document.getElementById("add_button").disabled = true;
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+      var street = document.getElementById("street").value;
+      var city = document.getElementById("city").value;
+      var state = document.getElementById("state").value;
+      var zip = document.getElementById("zip").value;
+      var email = document.getElementById("email").value;
+      if(firstname != '' && lastname != '' && street != '' && city != '' && state != '' && zip != '' && email != '')
+      {
+        google.script.run.withSuccessHandler(function(return_string) 
+        {
+          SearchRecords();
+          document.getElementById("add_button").disabled = false;
+        }).AddRecord(firstname, lastname, street, city, state, zip, email);       
+      }
+      else
+      {
+        document.getElementById("display_error").innerHTML = "Please Enter All Information!";
+        document.getElementById("add_button").disabled = false;
+      }
+    }
+
+    function ClearRecord()
+    {
+        document.getElementById("firstname").value = '';
+        document.getElementById("lastname").value = '';
+        document.getElementById("street").value = '';
+        document.getElementById("city").value = '';
+        document.getElementById("state").value = '';
+        document.getElementById("zip").value = '';
+        document.getElementById("email").value = '';
+        document.getElementById("display_error").innerHTML = "";
+    }
+
+    function UpdateRecord(row_number)
+    {
+      document.getElementById("update_button"+row_number).disabled = true;
+      var record_id = document.getElementById("up_record_id"+row_number).value;
+      var firstname = document.getElementById("up_firstname"+row_number).value;
+      var lastname = document.getElementById("up_lastname"+row_number).value;
+      var street = document.getElementById("up_street"+row_number).value;
+      var city = document.getElementById("up_city"+row_number).value;
+      var state = document.getElementById("up_state"+row_number).value;
+      var zip = document.getElementById("up_zip"+row_number).value;
+      var email = document.getElementById("up_email"+row_number).value;
+
+      google.script.run.withSuccessHandler(function(return_string) 
+      {
+          document.getElementById("update_button"+row_number).disabled = false;
+      }).UpdateRecord(record_id, firstname, lastname, street, city, state, zip, email);
+    }
+
+    function DeleteRecord(row_number)
+    {
+
+      var record_id = document.getElementById("up_record_id"+row_number).value;
+
+      google.script.run.withSuccessHandler(function(return_string) 
+      {
+        if(return_string == 'SUCCESS')
+        {
+          document.getElementById('mainTable').deleteRow(document.getElementById('ROWNUMBER:'+row_number).rowIndex); 
+        }
+      }).DeleteRecord(record_id);
+    }
+
+    function SearchRecords() 
+    {
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+      var street = document.getElementById("street").value;
+      var city = document.getElementById("city").value;
+      var state = document.getElementById("state").value;
+      var zip = document.getElementById("zip").value;
+      var email = document.getElementById("email").value;
+      var row_number = 0;
+
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+
+        console.log(ar);
+        var displayTable = '<form>';
+        displayTable += '<table class=\"table\" id=\"mainTable\" >';
+        displayTable += "<tr>";
+        displayTable += "<th>Name</th>";
+        displayTable += "<th>Address</th>";
+        displayTable += "<th>Email</th>";
+        displayTable += "<th></th>";
+        displayTable += "</tr>";
+
+        ar.forEach(function(item, index) 
+        {
+          displayTable += "<tr id=\"ROWNUMBER:"+ row_number +"\" >";
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-12\" ><label for=\"up_firstname\">First</label>  ";
+          displayTable += "<input type=\"text\" id=\"up_firstname"+ row_number +"\" value=\""+item[1]+"\" class=\"form-control\" /> ";
+          displayTable += "<input type=\"hidden\" id=\"up_record_id"+ row_number +"\" value=\""+item[0]+"\" /></div></div> ";
+          displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-12\"><label for=\"up_lastname\">Last</label> ";
+          displayTable += "<input type=\"text\" id=\"up_lastname"+ row_number +"\" value=\""+item[2]+"\" class=\"form-control\" /></div></div></td> ";
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-12\"><label for=\"up_street\">Street</label> ";
+          displayTable += "<input type=\"text\" id=\"up_street"+ row_number +"\" value=\""+item[3]+"\" class=\"form-control\" /></div></div> ";
+          displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-6\"><label for=\"up_city\">City</label> "; 
+          displayTable += "<input type=\"text\" id=\"up_city"+ row_number +"\" value=\""+item[4]+"\" class=\"form-control\" /></div> ";
+          displayTable += "<div class=\"form-group col-md-4\"><label for=\"up_state\">State</label> ";
+          displayTable += "<input type=\"text\" id=\"up_state"+ row_number +"\" value=\""+item[5]+"\" class=\"form-control\" /></div> ";
+          displayTable += "<div class=\"form-group col-md-2\"><label for=\"up_zip\">Zip</label> ";
+          displayTable += "<input type=\"text\" id=\"up_zip"+ row_number +"\" value=\""+item[6]+"\" class=\"form-control\" /></div></div> ";
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-12\" ><label for=\"up_email\">Email</label> ";
+          displayTable += "<input type=\"text\" id=\"up_email"+ row_number +"\" value=\""+item[7]+"\" class=\"form-control\" /></div></div></td> ";
+          displayTable += "<td><div style=\"padding: 5px\"> ";
+          displayTable += "<input type=\"button\" id=\"update_button"+ row_number +"\" value=\"Update\" class=\"btn btn-primary\" ";
+          displayTable += "onclick=\"UpdateRecord("+row_number+")\" /></div> ";
+          displayTable += "<div style=\"padding: 5px\" > ";
+          displayTable += "<input type=\"button\" value=\"Delete\" id=\"delete_button"+ row_number +"\"  class=\"btn btn-primary\" ";
+          displayTable += "onclick=\"DeleteRecord("+row_number+")\" /></div> ";
+          displayTable += "</td>";
+          displayTable += "</tr>";
+          row_number++;    
+        });
+
+        displayTable += '</table></form>';     
+        document.getElementById("rowdata").innerHTML = displayTable;
+
+      }).searchRecords(firstname, lastname, street, city, state, zip, email);
+      
+    }
+    </script>
+  </head>
+  <body>
+  <div style="padding: 10px;" >
+  <form>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="firstname">First Name</label>
+  <input type="text" id="firstname" class="form-control" />
+  </div>
+  <div class="form-group col-md-3">
+  <label for="lastname">Last Name</label>
+  <input type="text" id="lastname" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="street">Street</label>
+  <input type="text" id="street" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="city">City</label>
+  <input type="text" id="city" class="form-control" />
+  </div> 
+  <div class="form-group col-md-2">
+  <label for="state">State</label>
+  <input type="text" id="state" class="form-control" />
+  </div> 
+  <div class="form-group col-md-1">
+  <label for="zip" >Zip</label>
+  <input type="text" id="zip" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="email" >Email</label>
+  <input type="text" id="email" class="form-control "/>
+  </div>
+  </div>
+  <div class="form-group col-md-6">
+  <input type="button" value="Search" class="btn btn-primary" onclick="SearchRecords()" />
+  <input type="button" value="Add Record" class="btn btn-primary" onclick="AddRow()" id="add_button" />
+  <input type="button" value="Clear Record" class="btn btn-primary" onclick="ClearRecord()" />
+  <div id="display_error" style="color: red" ></div>
+  </div>
+  </form> 
+  <div id="rowdata"></div>
+  </div>
+  </body>
+</html>

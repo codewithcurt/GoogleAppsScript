@@ -1,0 +1,13 @@
+function doGet(e) {
+  return HtmlService.createTemplateFromFile('WebAppSorter').evaluate();
+}
+
+function getRecords()
+{
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var recordsSheet = ss.getSheetByName("RECORDS");
+  var recordsRange = recordsSheet.getDataRange();
+  var recordsValues = recordsRange.getValues();  
+  return recordsValues;
+
+}

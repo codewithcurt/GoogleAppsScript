@@ -1,0 +1,30 @@
+function emailChange(e) {
+
+  var range = e.range;
+  var spreadSheet = e.source;
+  var sheetName = spreadSheet.getActiveSheet().getName();
+  var spreadsheetName = SpreadsheetApp.getActiveSpreadsheet().getName();
+  var column = range.getColumn();
+  var row = range.getRow();
+  var inputValue = e.value;
+  var oldValue = e.oldValue;
+  var user = e.user;
+
+  var table = "<table border=1 cellpadding=5px >";
+  table = table + "<tr><td>File Name</td><td>"+spreadsheetName+"</td></tr>";
+  table = table + "<tr><td>Sheet Name</td><td>"+sheetName+"</td></tr>";
+  table = table + "<tr><td>Column</td><td>"+column+"</td></tr>";
+  table = table + "<tr><td>Row</td><td>"+row+"</td></tr>";
+  table = table + "<tr><td>Old Value</td><td>"+oldValue+"</td></tr>";
+  table = table + "<tr><td>Input Value</td><td>"+inputValue+"</td></tr>";
+  table = table + "<tr><td>User</td><td>"+user+"</td></tr>";
+  table = table + "<tr><td>Modified</td><td>"+new Date()+"</td></tr>";
+  table = table + "</table>";
+  
+  MailApp.sendEmail({
+    to: "",  //Enter Email Address to Send Email 
+    subject: spreadsheetName + " - Change",
+    htmlBody: table 
+  });
+
+}

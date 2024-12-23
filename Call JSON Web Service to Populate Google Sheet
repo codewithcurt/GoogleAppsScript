@@ -1,0 +1,86 @@
+function getData() {
+  
+  // DECLARE SHEET
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var mainSheet = ss.getSheetByName("MAIN");
+  
+  // GET CATEGORY VALUE
+  var race_year = mainSheet.getRange(3, 2).getValue();
+  var race_num = mainSheet.getRange(2, 2).getValue();
+  var race_laps = mainSheet.getRange(1, 2).getValue();
+  
+  //CLEAR QUESTION AND ANSWER
+  mainSheet.getRange('A7:DC27').clear();
+  
+  //INSERT LAP NUMBERS
+  for (var j = 1; j <= race_laps; j++)
+  {
+       mainSheet.getRange(7, j + 1).setValue([j]); 
+       SpreadsheetApp.flush();
+  }
+
+  // URL
+  var URL_STRING = "http://ergast.com/api/f1/" + race_year + "/" + race_num + "/drivers.json"
+
+  console.log('URL_STRING ' + URL_STRING);
+
+
+  //CALL API
+  var response = UrlFetchApp.fetch(URL_STRING);
+  var json = response.getContentText();
+  var data = JSON.parse(json);
+  
+  var drivers = [];
+  
+  //GET DRIVERS
+  for (var i = 0; i < data.MRData.DriverTable.Drivers.length; i++) 
+  { 
+    var drivers_Array = data.MRData.DriverTable.Drivers;      
+    
+    //STORING DRIVERS
+    drivers.push(drivers_Array[i].driverId);
+
+    mainSheet.getRange(8 + i, 1).setValue([drivers_Array[i].driverId]);
+    SpreadsheetApp.flush();
+  }
+
+  for (var j = 1; j <= race_laps; j++)
+  {
+    // URL
+    var URL_STRING = "http://ergast.com/api/f1/" + race_year + "/" + race_num + "/laps/" + j + ".json";
+
+    console.log('URL_STRING ' + URL_STRING);
+
+    //CALL API
+    var response = UrlFetchApp.fetch(URL_STRING);
+    var json = response.getContentText();
+    var data = JSON.parse(json);
+
+    var laptime_array = data.MRData.RaceTable.Races[0].Laps[0].Timings;
+
+    for (var y = 0; y < drivers.length; y++)
+    {
+      var driver_id = drivers[y];
+
+      console.log('laptimes ' + laptime_array.length);
+
+      //GET LAP TIMES
+      for (var i = 0; i < laptime_array.length; i++) 
+      {      
+        if (laptime_array[i]["driverId"] == driver_id)
+        {
+          var laptime = laptime_array[i]["time"];
+          const time_array = laptime.split(":");
+          const seconds = time_array[0]*60+(+time_array[1]);
+          mainSheet.getRange(8 + y, j + 1).setValue([seconds]);
+          SpreadsheetApp.flush();
+          break;
+        }
+
+      }
+    }
+ 
+  }
+  
+}
+

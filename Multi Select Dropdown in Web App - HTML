@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h1>Web App Multi Select</h1>
+    <?var url = getUrl();?>
+    <form method="post" action="<?= url ?>" >
+      <label style="font-size: 20px" >Name</label><br>
+      <input type="text" name="name" style="font-size: 20px" /><br><br>
+      <label style="font-size: 20px" >Favorite Colors</label><br>
+      <select name="colors" multiple style="font-size: 20px" >
+      <option value="Red" >Red</option>
+      <option value="Blue" >Blue</option>
+      <option value="Yellow" >Yellow</option>
+      <option value="Green" >Green</option>
+      <option value="Orange" >Orange</option>
+      <option value="Brown" >Brown</option>
+      <option value="White" >White</option>
+      <option value="Black" >Black</option>
+      </select><br><br>
+      <input type="submit" name="submitButton" value="Submit" style="font-size: 20px" /> 
+      <span style="font-size: 20px" ><?= message ?></span>      
+    </form>
+  </body>
+</html>

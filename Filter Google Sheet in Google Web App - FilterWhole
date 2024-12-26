@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h1>Web App Filter Whole</h1>
+    <?var url = getUrl();?>
+    <form method="post" action="<?= url ?>" >
+    <label>Search</label><br>
+    <input type="text" name="search" value="<?= search ?>" />
+    <input type="submit" name="searchButton" value="Search" />
+    </form><br>
+    
+    <table border="1" cellpadding="5px" >
+    <?var tableData = getSheetData();?>
+    <?for(var i = 0; i < tableData.length; i++) { ?>
+      <?if(i == 0) { ?>
+        <tr>
+        <?for(var j = 0; j < tableData[i].length; j++) { ?>
+        <th><?= tableData[i][j] ?></th>
+        <? } ?>
+        </tr>
+      <? } else { ?>
+        <? var rowArray =  tableData[i];
+        var stringSearch = rowArray.toString().toLowerCase();
+        if(stringSearch.indexOf(search.toLowerCase()) != -1 || search == '') { ?>
+        <tr>
+        <? for(var j = 0; j < tableData[i].length; j++) { ?>
+          <td><?= tableData[i][j] ?></td>
+          <? } ?>
+        </tr>
+      <? }} ?>
+    <? } ?>
+    </table>
+    
+  </body>
+</html>

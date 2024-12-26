@@ -1,0 +1,41 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebApp');
+}
+
+function getResultsSQL(type, color, height1, height2){
+
+  var url = '';  //Paste URL of GOOGLE SHEET
+  var ss= SpreadsheetApp.openByUrl(url);
+  var webAppSheet2 = ss.getSheetByName("Sheet2");
+  var webAppSheet1 = ss.getSheetByName("Sheet1");
+  var sqlStatement = 'select A, B, C where 1 = 1 ';
+  
+  if(type != '')
+  {
+    sqlStatement += " and A = '"+type+"' ";
+  }
+
+  if(color != '')
+  {
+    sqlStatement += " and B = '"+color+"' ";
+  }
+
+  if(height1 != '')
+  {
+    if(height2 == '')
+    {
+      height2 = height1;
+    }
+    
+    sqlStatement += " and C >= "+height1+" and C <=  "+height2+" ";
+  }
+  
+  var getLastRow = webAppSheet1.getLastRow(); 
+  var tableRange = 'Sheet1!A1:C'+getLastRow;  
+  var query = '=QUERY('+tableRange+',\"'+sqlStatement+'\")';
+  var setResults = webAppSheet2.getRange(1, 1).setFormula(query); 
+  var getResults = webAppSheet2.getDataRange().getValues();
+
+  return getResults;
+
+}

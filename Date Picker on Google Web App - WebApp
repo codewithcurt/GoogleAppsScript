@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">   
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+    $( document ).ready(function() {
+      $("#startdate").datepicker();
+      $("#enddate").datepicker();
+    });
+    function AddRecord()
+    {
+      var name = document.getElementById("name").value;
+      var startdate = document.getElementById("startdate").value;
+      var enddate = document.getElementById("enddate").value;
+      google.script.run.AddRecord(name, startdate, enddate);
+      document.getElementById("name").value = '';
+      document.getElementById("startdate").value = '';
+      document.getElementById("enddate").value = '';
+    }
+    </script>
+  </head>
+  <body>
+    Name:<input type="text" id="name" />
+    Start Date:<input type="text" id="startdate" /> 
+    End Date:<input type="text" id="enddate" />
+    <input type="button" value="Add" onclick="AddRecord()" />
+  </body>
+</html>

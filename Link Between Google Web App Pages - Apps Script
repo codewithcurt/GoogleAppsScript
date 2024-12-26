@@ -1,0 +1,35 @@
+function doGet(e) {
+  if (!e.parameter.page) 
+  {
+    var htmlOutput =  HtmlService.createTemplateFromFile('Index');
+    htmlOutput.message = '';
+    return htmlOutput.evaluate();
+  }
+  else if(e.parameter['page'] == 'Link 1')
+  {
+    Logger.log(JSON.stringify(e));
+    var htmlOutput =  HtmlService.createTemplateFromFile('Link 1');
+    htmlOutput.firstname = e.parameter['firstname'];
+    htmlOutput.lastname = e.parameter['lastname'];
+    return htmlOutput.evaluate();  
+  }
+  else if(e.parameter['page'] == 'Link 2')
+  {
+    var htmlOutput =  HtmlService.createTemplateFromFile('Link 2');
+    htmlOutput.firstname = e.parameter['firstname'];
+    htmlOutput.lastname = e.parameter['lastname'];
+    return htmlOutput.evaluate();  
+  } 
+  else if(e.parameter['page'] == 'Index')
+  {
+    var htmlOutput =  HtmlService.createTemplateFromFile('Index');
+    htmlOutput.message = e.parameter['message'];
+    return htmlOutput.evaluate();  
+  }   
+}
+
+
+function getUrl() {
+ var url = ScriptApp.getService().getUrl();
+ return url;
+}

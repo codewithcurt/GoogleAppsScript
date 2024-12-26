@@ -1,0 +1,46 @@
+function createDocument() {
+  
+  var ui = SpreadsheetApp.getUi();
+  var fileName = ui.prompt("File Name");
+  var reportHeader = ui.prompt("Report Header");
+  
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheetByName('Data'); 
+  var dataRange = dataSheet.getDataRange();
+  var dataValues = dataRange.getValues();
+  
+  var destination_id = '';  // ID OF GOOGLE DRIVE DIRECTORY;
+  var destination = DriveApp.getFolderById(destination_id);
+  
+  var doc = DocumentApp.create(fileName.getResponseText());
+  var docID = doc.getId();
+  var file = DriveApp.getFileById(docID);
+  file.moveTo(destination);
+  
+  var body = doc.getBody();
+  body.insertParagraph(0, reportHeader.getResponseText())
+	 .setHeading(DocumentApp.ParagraphHeading.HEADING1);
+  table = body.appendTable(dataValues);
+  
+  
+  var tableHeader = table.getRow(0);
+  tableHeader.editAsText().setBold(true).setForegroundColor('#ffffff');
+  var getCells = tableHeader.getNumCells();
+  
+  for(var i = 0; i < getCells; i++)
+  {
+    tableHeader.getCell(i).setBackgroundColor('#BBB9B9');
+  }
+}
+
+function addMenu()
+{
+  var menu = SpreadsheetApp.getUi().createMenu('Custom');
+  menu.addItem('Create Doc', 'createDocument');
+  menu.addToUi(); 
+}
+
+function onOpen(e)
+{
+  addMenu(); 
+}

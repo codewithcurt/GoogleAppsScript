@@ -1,0 +1,11 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebAppBoot');
+}
+
+function AddRecord(firstname, lastname, street, city, state, zip, email) {
+  var url = '';  //Paste URL of GOOGLE SHEET
+  var ss= SpreadsheetApp.openByUrl(url);
+  var webAppSheet = ss.getSheetByName("FORM DATA");
+  webAppSheet.appendRow([firstname, lastname, street, city, state, zip, email, new Date()]);
+  
+}

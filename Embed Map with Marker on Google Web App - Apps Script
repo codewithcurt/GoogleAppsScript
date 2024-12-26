@@ -1,0 +1,25 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('GetMaps');
+}
+
+function getList() { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var locationSheet = ss.getSheetByName("LOCATIONS"); 
+  var getLastRow = locationSheet.getLastRow();  
+  return locationSheet.getRange(2, 1, getLastRow - 1, 5).getValues();  
+}
+
+
+function getAddress(address) {
+  var response = Maps.newGeocoder().geocode(address);
+  var returnArray = [];
+  for (var i = 0; i < response.results.length; i++) {
+    var result = response.results[i];
+    Logger.log('%s: %s, %s', result.formatted_address, result.geometry.location.lat,
+               result.geometry.location.lng);
+    
+    returnArray.push([result.geometry.location.lat,result.geometry.location.lng]);
+    return returnArray;
+  }
+}
+

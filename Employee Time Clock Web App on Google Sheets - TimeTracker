@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>   
+    <script>
+    $( document ).ready(function() {
+      getEmployees();
+    });
+    
+    function getEmployees() 
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    var employeeSelect = document.getElementById("employee");
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    employeeSelect.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      var employee = item[0];
+      option.value = item[0];
+      option.text = item[0];
+      employeeSelect.appendChild(option);    
+    });
+    }).getEmployees();
+    
+    };
+    
+    function ClockIn()
+    {
+    
+    $('#message').html("");
+    var employee = document.getElementById("employee").value;
+    
+    if(employee != '')
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+     console.log(ar);
+    ar.forEach(function(item, index) 
+    {
+    
+    if(item[0] == 'SUCCESS')
+    {
+    var message = item[2] + ' Clocked in at ' + item[1];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-primary";
+    }
+    else
+    {
+    var message = item[2] + ' ' + item[0];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-warning"; 
+    }
+    
+     
+    });
+    
+    }).clockIn(employee);
+    
+    }
+    }
+    
+    function ClockOut()
+    {
+    
+    $('#message').html("");
+    var employee = document.getElementById("employee").value;
+    
+    if(employee != '')
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    console.log(ar);
+    ar.forEach(function(item, index) 
+    {
+    
+    if(item[0] == 'SUCCESS')
+    {
+    var message = item[2] + ' Clocked out at ' + item[1];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-primary";
+    }
+    else
+    {
+    var message = item[2] + ' ' + item[0];
+    $('#message').html(message);
+    document.getElementById("message").className = "alert alert-warning"; 
+    }
+        
+    });
+    
+    }).clockOut(employee);
+    
+    }
+    }
+    </script>
+  </head>
+  <body>
+  <div style="padding: 10px;" >
+  <h1>Time Tracker</h1><br>
+  <form>
+  <div class="form-row">
+  <div class="form-group col-md-4">
+  <label for="employee">Employee</label>
+  <select class="form-control" id="employee">
+  </select>
+  </div>
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-4">
+  <input type="button" value="Clock In" id="clockin" class="btn btn-primary" onclick="ClockIn()" />
+  <input type="button" value="Clock Out" id="clockout" class="btn btn-primary" onclick="ClockOut()" /><br><br>
+  <div class="alert alert-primary" role="alert" id="message">
+  </div>
+  </div> 
+  </div> 
+  </form>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+function onEdit(e) {
+
+  var range = e.range;
+  var spreadSheet = e.source;
+  var sheetName = spreadSheet.getActiveSheet().getName();
+  var column = range.getColumn();
+  var row = range.getRow();
+  var reportValue = e.value;
+  
+  if(sheetName == 'REPORT' && column == 1 && row == 1)
+  {
+    var ss= SpreadsheetApp.getActiveSpreadsheet();
+    var dataSheet = ss.getSheetByName("DATA");
+    var reportSheet = ss.getSheetByName("REPORT");
+    var reportListSheet = ss.getSheetByName("REPORT LIST");
+    
+    //GET SQL STATEMENT
+    var lastRowRLS = reportListSheet.getLastRow();    
+    for(var i = 2; i <= lastRowRLS; i++)
+    {
+     if(reportValue == reportListSheet.getRange(i, 1).getValue())
+     {
+       var sqlStatement = reportListSheet.getRange(i, 2).getValue();
+      
+     }
+    }
+    
+    //GET LAST COLUMN ON DATASHEET
+    var lastColumn = 1;
+    while(dataSheet.getRange(1,lastColumn).isBlank() == false)
+    {     
+      lastColumn = lastColumn + 1;         
+    }
+    
+    //GET LETTER OF COLUMN
+    var lastColumnLetter = columnReturnLetter(lastColumn);
+
+    //GET LAST ROW ON DATASHEET
+    var lastRowData = dataSheet.getLastRow();
+    
+    
+    var tableRange = 'DATA!A1:'+lastColumnLetter+lastRowData;  
+    var query = '=QUERY('+tableRange+',\"'+sqlStatement+'\")';
+    var setResults = reportSheet.getRange(3, 1).setFormula(query); 
+  }
+
+}
+
+function columnReturnLetter(number)
+{
+  var temp = ''; 
+  var returnLetter = '';
+  while (number > 0)
+  {
+    temp = (number - 1) % 26;
+    returnLetter = String.fromCharCode(temp + 65) + returnLetter;
+    number = (number - temp - 1) / 26;
+  }
+  return returnLetter;
+}

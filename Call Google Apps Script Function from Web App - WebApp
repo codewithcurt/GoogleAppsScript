@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <base target="_top">
+  <script>
+  function callOneCellData()
+  {
+    google.script.run.withSuccessHandler(function(returnData) 
+    {
+       document.getElementById("oneCellData").innerHTML = returnData;
+    }).getOneCellData();
+  }
+  
+  function callMultiCellData()
+  {
+    google.script.run.withSuccessHandler(function(returnArray) 
+    {
+        console.log(returnArray);
+        var stringArray = returnArray.toString();
+        document.getElementById("multiData").innerHTML = stringArray;
+    }).getMultiCellData();
+  }
+  
+  function callInOutData()
+  {
+    var inData = document.getElementById("inData").value
+    google.script.run.withSuccessHandler(function(outData) 
+    {
+        document.getElementById("outData").innerHTML = outData;
+    }).getInOutData(inData);
+  }
+  
+  function callData()
+  {
+    callOneCellData();
+    callMultiCellData();
+    callInOutData();
+  }  
+  </script>
+  </head>
+  <body>
+  <label>One Cell Data</label><br><textarea id="oneCellData" ></textarea><br>
+  <label>Multi Data</label><br><textarea id="multiData" ></textarea><br>
+  <label>In Data</label><br><input type="text" id="inData" /><br>
+  <label>Out Data</label><br><textarea id="outData" ></textarea><br>
+  <input type="button" onclick="callData()" value="Get Data" />
+  </body>
+</html>

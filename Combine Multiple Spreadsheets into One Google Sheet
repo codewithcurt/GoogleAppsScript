@@ -1,0 +1,47 @@
+function addMenu()
+{
+ var menu = SpreadsheetApp.getUi().createMenu('Custom');
+ menu.addItem('Copy Data', 'getData');
+ menu.addToUi();
+}
+
+function onOpen(e)
+{
+ addMenu(); 
+}
+
+function getData() {
+  
+  get_files = ['SpreadSheet Example 1', 'SpreadSheet Example 2'];
+  
+  var ssa = SpreadsheetApp.getActiveSpreadsheet();
+  var copySheet = ssa.getSheetByName('DATA');
+  copySheet.getRange('A2:Z').clear();  
+  
+  for(z = 0; z < get_files.length; z++)
+  {
+  
+    var files = DriveApp.getFilesByName(get_files[z]);
+    while (files.hasNext()) 
+    {
+      var file = files.next();
+      break;
+    }
+  
+    var ss = SpreadsheetApp.open(file);
+    SpreadsheetApp.setActiveSpreadsheet(ss);
+    var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    
+    for(var i = 0; i < sheets.length; i++)
+    {  
+      var nameSheet = ss.getSheetByName(sheets[i].getName()); 
+      var nameRange = nameSheet.getDataRange();
+      var nameValues = nameRange.getValues();
+      
+      for(var y = 1; y < nameValues.length; y++)
+      {
+        copySheet.appendRow(nameValues[y]); 
+      }     
+    }    
+  }  
+}

@@ -1,0 +1,12 @@
+function doGet(e) {
+  var htmlOutput =  HtmlService.createTemplateFromFile('DisplaySheet');
+  return htmlOutput.evaluate();
+}
+
+function getSheetData()  { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheetByName('Data'); 
+  var dataRange = dataSheet.getDataRange();
+  var dataValues = dataRange.getValues();  
+  return dataValues;
+}

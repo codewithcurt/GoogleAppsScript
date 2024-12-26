@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  <script>
+  function Back()
+  {  
+    var url = document.getElementById("url").value;
+    var link = document.createElement('a');
+    link.href = url+"?page=Index&message=Back From Link 2";
+    link.id = 'linkURL';
+    document.body.appendChild(link);
+    document.getElementById("linkURL").click();  
+  }
+  </script>  
+  </head>
+   <body>
+    <h1>Link 2</h1>
+    <input type="button" value="Back to Main Menu" onclick="Back()" /><br>
+    <span>FIRST NAME: <?= firstname ?></span><br>
+    <span>LAST NAME: <?= lastname ?></span><br>
+    <?var url = getUrl();?><input type="hidden" value="<?= url ?>" id="url" />
+   </body>
+</html>

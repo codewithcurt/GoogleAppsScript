@@ -1,0 +1,39 @@
+function getDirection() {
+  
+  // DECLARE SHEET
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var mapSheet = ss.getSheetByName("MAP");
+  
+  var start = mapSheet.getRange('B1').getValue();
+  var end = mapSheet.getRange('B2').getValue();
+  
+  var directions = Maps.newDirectionFinder()
+    .setOrigin(start)
+    .setDestination(end)
+    .setMode(Maps.DirectionFinder.Mode.DRIVING)
+    .getDirections();
+  
+  //Logger.log(directions.routes[0].legs[0].duration.text);
+
+  //CLEAR QUESTION AND ANSWER
+  mapSheet.getRange('A6:D500').clear();
+  
+  //NEXT ROW ON MAP SHEET
+  var nextRow = mapSheet.getLastRow() + 1;
+
+  for (var i = 0; i < directions.routes[0].legs.length; i++) 
+  {
+    var endAddress = directions.routes[0].legs[i].end_address;
+    var startAddress = directions.routes[0].legs[i].start_address;
+    var distance = directions.routes[0].legs[i].distance.text;
+    var duration = directions.routes[0].legs[i].duration.text;
+    
+    mapSheet.getRange(nextRow,1).setValue(startAddress);
+    mapSheet.getRange(nextRow,2).setValue(endAddress);
+    mapSheet.getRange(nextRow,3).setValue(distance);
+    mapSheet.getRange(nextRow,4).setValue(duration);
+    
+    nextRow++;
+
+  }
+}

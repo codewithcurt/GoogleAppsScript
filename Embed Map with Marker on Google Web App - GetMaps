@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script>
+    function loadAddresses() 
+    {
+    
+    google.script.run.withSuccessHandler(function(ar) 
+    {
+    var addressesSelect = document.getElementById("addresses");
+    console.log(ar);
+    
+    let option = document.createElement("option");
+    option.value = "";
+    option.text = "";
+    addressesSelect.appendChild(option);
+    
+    ar.forEach(function(item, index) 
+    {    
+      let option = document.createElement("option");
+      var location = item[0];
+      var streetAddress = item[1];
+      var city = item[2];
+      var state = item[3];
+      var zip = item[4];
+      option.value = streetAddress + ' ' + city + ', ' + state + ' ' + zip;
+      option.text = location;
+      addressesSelect.appendChild(option);    
+    });
+    
+    }).getList();
+    
+    };
+    
+    function onSelect()
+    {
+    
+    var address = document.getElementById("addresses").value;
+    google.script.run.withSuccessHandler(function(ar)
+    {
+    
+    console.log(ar);
+    ar.forEach(function(item, index) 
+    {
+    
+    document.getElementById('locationMap').innerHTML = "<div id='map' style='width: 600px; height: 400px;'></div>";
+    
+    var map = L.map('map',{
+    center: [item[0], item[1]],
+    zoom: 15
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    var marker = L.marker([item[0], item[1]]).addTo(map);
+    
+    });
+    
+    }).getAddress(address);
+    
+    }
+  </script>
+  </head>
+  <body>
+  Pick Location:  <select id="addresses" onchange="onSelect()" ></select><br><br>
+  <div id="locationMap" ></div>
+  <script>loadAddresses();</script>   
+  </body>
+</html>

@@ -1,0 +1,65 @@
+function clearRow() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet();  
+  var editSheet = ss.getSheetByName("EDIT"); 
+  var lastRowEdit = editSheet.getLastRow();
+  
+  for(var i = 2; i <= lastRowEdit; i++)
+  {  
+   
+   if(editSheet.getRange(i,1).getValue() == 'TRAIN')
+   {
+     editSheet.getRange('A' + i + ':C' + i).clear();     
+   }    
+  }    
+}
+
+function deleteRow() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+  var editSheet = ss.getSheetByName("EDIT"); 
+  var lastRowEdit = editSheet.getLastRow();
+  
+  for(var i = 2; i <= lastRowEdit; i++)
+  {  
+   
+   if(editSheet.getRange(i,1).getValue() == 'TRAIN')
+   {
+     editSheet.deleteRow(i);    
+   }
+    
+  }    
+}
+
+function insertRow() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+  var editSheet = ss.getSheetByName("EDIT"); 
+  var lastRowEdit = editSheet.getLastRow();
+  
+  for(var i = 2; i <= lastRowEdit; i++)
+  {  
+   
+   if(editSheet.getRange(i,1).getValue() == 'TRAIN')
+   {
+     editSheet.insertRowAfter(i);    
+   }
+    
+  }   
+}
+
+function replaceRow() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet();  
+  var editSheet = ss.getSheetByName("EDIT"); 
+  var lastRowEdit = editSheet.getLastRow();
+  
+  for(var i = 2; i <= lastRowEdit; i++)
+  {  
+   
+   if(editSheet.getRange(i,1).getValue() == 'TRAIN')
+   {
+     editSheet.getRange('A' + i + ':C' + i).setValues([['AIRPLANE', 'ORANGE', 30]]);     
+   }    
+  }   
+}

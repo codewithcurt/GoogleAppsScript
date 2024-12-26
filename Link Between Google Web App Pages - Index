@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script>
+    function Link1()
+    {
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+          
+      var url = document.getElementById("url").value;
+      var link = document.createElement('a');
+      link.href = url+"?firstname="+firstname+"&lastname="+lastname+"&page=Link 1";
+      link.id = 'linkURL';
+      document.body.appendChild(link);
+      document.getElementById("linkURL").click();        
+
+    }
+    function Link2()
+    {
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+          
+      var url = document.getElementById("url").value;
+      var link = document.createElement('a');
+      link.href = url+"?firstname="+firstname+"&lastname="+lastname+"&page=Link 2";
+      link.id = 'linkURL';
+      document.body.appendChild(link);
+      document.getElementById("linkURL").click();        
+    }
+    </script>
+  </head>
+   <body>
+      <h1>Main Menu</h1>
+      <input type="button" value="Link 1" onclick="Link1()" /><br>
+      <input type="button" value="Link 2" onclick="Link2()" /><br><br>
+      <label>First Name</label><br>
+      <input type="text" id="firstname" /><br>
+      <label> Last Name</label><br>
+      <input type="text" id="lastname" /><br><br> 
+      <span><?= message ?></span>
+      <?var url = getUrl();?><input type="hidden" value="<?= url ?>" id="url" />
+  </body>
+</html>

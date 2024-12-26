@@ -1,0 +1,21 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebAppChart');
+}
+
+function getCases() { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var casesSheet = ss.getSheetByName("US COVID CASES"); 
+  var getLastRow = casesSheet.getLastRow();  
+  
+  return casesSheet.getRange(2, 1, getLastRow - 1, 2).getValues();  
+
+}
+
+function getPopulation() { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var populationSheet = ss.getSheetByName("CITY POPULATION"); 
+  var getLastRow = populationSheet.getLastRow();  
+  
+  return populationSheet.getRange(2, 1, getLastRow - 1, 4).getValues();  
+
+}

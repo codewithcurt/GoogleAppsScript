@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.js" 
+    integrity="sha512-QEiC894KVkN9Tsoi6+mKf8HaCLJvyA6QIRzY5KrfINXYuP9NxdIkRQhGq3BZi0J4I7V5SidGM3XUQ5wFiMDuWg==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.css" 
+    integrity="sha512-SUJFImtiT87gVCOXl3aGC00zfDl6ggYAw5+oheJvRJ8KBXZrr/TMISSdVJ5bBarbQDRC2pR5Kto3xTR0kpZInA==" crossorigin="anonymous" />
+    <script>
+    $( document ).ready(function() {
+      getCases();
+      getCityPopulation();
+    });
+    
+    function getCases() 
+    {
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+    
+        console.log(ar);
+    
+        var data = [];
+        var label = [];
+        ar.forEach(function(item, index) 
+        {    
+          data.push(item[1]);
+          label.push(item[0]);   
+        });
+    
+        var ctx = document.getElementById("lineChart").getContext("2d");
+
+	    var lineChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: label,
+			datasets: [{
+				label: 'Cases',
+				fill: true,
+				data: data,
+			}]
+		},
+		options: {
+			maintainAspectRatio: false,
+            elements: {
+				line: {
+					tension: 0.000001
+				}
+			},
+			title: {
+				display: true,
+				text: 'COVID Cases US'
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+				}],
+				yAxes: [{
+					display: true,
+				}]
+			}
+		}
+	    });
+
+      }).getCases();
+    
+    };
+    
+    
+    function getCityPopulation() 
+    {
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+    
+        console.log(ar);
+    
+        var data = [];
+        var label = [];
+        var color = [];
+        ar.forEach(function(item, index) 
+        {    
+          data.push(item[2]);
+          label.push(item[0]);
+          color.push(item[3]);
+        });
+    
+        var ctx = document.getElementById("pieChart").getContext("2d");
+
+	    var pieChart = new Chart(ctx, {
+		type: 'pie',
+		data: {
+			labels: label,
+			datasets: [{
+				//label: 'Cases',
+				//fill: false,
+				data: data,
+                backgroundColor: color,
+			}]
+		},
+		options: {
+            maintainAspectRatio: false,
+            title: {
+				display: true,
+				text: 'CITY POPULATION'
+			},
+		}
+	    });
+
+      }).getPopulation();
+    
+    };
+    </script>
+  </head>
+  <body>
+  <div style="width: 1000px; height: 400px;" >
+  <canvas id="lineChart" class="chartjs-render-monitor" ></canvas>
+  </div><br>
+  <div style="width: 400px; height: 400px;" >
+  <canvas id="pieChart" class="chartjs-render-monitor" ></canvas>
+  </div>
+  </body>
+</html>

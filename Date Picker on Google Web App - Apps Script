@@ -1,0 +1,11 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebApp');
+}
+
+function AddRecord(name, startdate, enddate) {
+  var url = '';  //Paste URL of GOOGLE SHEET
+  var ss= SpreadsheetApp.openByUrl(url);
+  var webAppSheet = ss.getSheetByName("Sheet1");
+  webAppSheet.appendRow([name, startdate, enddate]);
+  
+}

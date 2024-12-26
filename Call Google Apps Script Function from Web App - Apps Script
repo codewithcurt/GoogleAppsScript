@@ -1,0 +1,22 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebApp');
+}
+
+function getOneCellData() { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Sheet1"); 
+  var data = sheet.getRange('A1').getValue(); 
+  return data;  
+}
+
+function getMultiCellData() { 
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Sheet1"); 
+  var data = sheet.getRange('A1:C1').getValues(); 
+  return data;  
+}
+
+function getInOutData(inData) { 
+  var outData = "IN DATA: " + inData; 
+  return outData;  
+}

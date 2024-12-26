@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h1>Display Google Sheet Web App</h1>
+    <table border="1" cellpadding="5px" >
+    <?var tableData = getSheetData();?>
+    <?for(var i = 0; i < tableData.length; i++) { ?>
+      <?if(i == 0) { ?>
+        <tr>
+        <?for(var j = 0; j < tableData[i].length; j++) { ?>
+        <th><?= tableData[i][j] ?></th>
+        <? } ?>
+        </tr>
+      <? } else { ?>
+        <tr>
+        <?for(var j = 0; j < tableData[i].length; j++) { ?>
+        <td><?= tableData[i][j] ?></td>
+        <? } ?>
+        </tr>
+      <? } ?>
+    <? } ?>
+    </table>
+  </body>
+</html>

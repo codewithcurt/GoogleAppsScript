@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script>
+    function AddRow()
+    {
+      var firstname = document.getElementById("firstname").value;
+      var lastname = document.getElementById("lastname").value;
+      var street = document.getElementById("street").value;
+      var city = document.getElementById("city").value;
+      var state = document.getElementById("state").value;
+      var zip = document.getElementById("zip").value;
+      var email = document.getElementById("email").value;
+      if(firstname != '' && lastname != '' && street != '' && city != '' && state != '' && zip != '' && email != '')
+      {
+      google.script.run.AddRecord(firstname, lastname, street, city, state, zip, email);
+      document.getElementById("firstname").value = '';
+      document.getElementById("lastname").value = '';
+      document.getElementById("street").value = '';
+      document.getElementById("city").value = '';
+      document.getElementById("state").value = '';
+      document.getElementById("zip").value = '';
+      document.getElementById("email").value = '';
+      document.getElementById("display_error").innerHTML = "";
+      }
+      else
+      {
+      document.getElementById("display_error").innerHTML = "Please Enter All Information!";
+      }
+    }
+    </script>
+  </head>
+  <body>
+  <div style="padding: 10px;" >
+  <form>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="firstname">First Name</label>
+  <input type="text" id="firstname" class="form-control" />
+  </div>
+  <div class="form-group col-md-3">
+  <label for="lastname">Last Name</label>
+  <input type="text" id="lastname" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="street">Street</label>
+  <input type="text" id="street" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="city">City</label>
+  <input type="text" id="city" class="form-control" />
+  </div> 
+  <div class="form-group col-md-2">
+  <label for="state">State</label>
+  <input type="text" id="state" class="form-control" />
+  </div> 
+  <div class="form-group col-md-1">
+  <label for="zip" >Zip</label>
+  <input type="text" id="zip" class="form-control" />
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+  <label for="email" >Email</label>
+  <input type="text" id="email" class="form-control "/>
+  </div>
+  </div>
+  <div class="form-group col-md-3">
+  <input type="button" value="Submit" class="btn btn-primary" onclick="AddRow()" />
+  <div id="display_error" style="color: red" ></div>
+  </div>
+  </form>
+  </div>
+  </body>
+</html>

@@ -1,0 +1,183 @@
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+
+function StartCycleCount() {
+  
+  // DECLARE SHEET
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var locationsSheet = ss.getSheetByName("LOCATIONS");
+  var settingsSheet = ss.getSheetByName("SETTINGS");
+  var cycleSheet = ss.getSheetByName("CYCLE");
+  
+  var lastCycleRow = cycleSheet.getLastRow();
+  
+  for(var z = 5; z <= lastCycleRow; z++)
+  {
+    if(cycleSheet.getRange(z, 1).getValue() != '')
+    {
+      if(cycleSheet.getRange(z, 2).getValue() == '' || cycleSheet.getRange(z, 3).getValue() == '')
+      {
+         SpreadsheetApp.getUi().alert('Previous Cycle Count Not Complete'); 
+         return;
+      }
+    }
+  }
+  
+  var days = Number(settingsSheet.getRange(1,2).getValue());  
+  var lastLocationRow = locationsSheet.getLastRow();  
+  var cycleLocations = Math.floor(lastLocationRow / days);
+  
+  // HOW MANY LOCATIONS LEFT
+  var locationLeft = 0;
+  for(var y = 2; y <= lastLocationRow; y++)
+  {
+    if(locationsSheet.getRange(y, 2).getValue() == '')
+    {
+      locationLeft++;
+    }
+  }
+  
+  if(locationLeft <= cycleLocations)
+  {
+    cycleLocations = locationLeft; 
+  }
+  
+  //Logger.log('Cycle ' + cycleLocations);
+  
+  var cycleArray = [];
+  
+  var currentDate = new Date();
+  var currentMonth = currentDate.getMonth()+1;
+  var currentYear = currentDate.getFullYear();
+  var date = currentMonth.toString() + '/' + currentDate.getDate().toString() + '/' + currentYear.toString();
+  
+  do 
+  {
+       var location = getRandomInt(lastLocationRow + 1);
+       
+       if(location == 0)
+       {
+         null; 
+       }
+       else if(locationsSheet.getRange(location, 2).getValue() == '')
+       {
+         //Logger.log('Location ' + location);
+         cycleArray.push(locationsSheet.getRange(location, 1).getValue());
+         locationsSheet.getRange(location, 2).setValue(date);
+       }     
+  }
+  while (cycleArray.length < cycleLocations);
+  
+  cycleSheet.getRange(1,2).setValue(date);
+  cycleSheet.getRange('A5:C1000').clear();
+  
+  for(var i = 0; i <= cycleArray.length; i++)
+  {
+   cycleSheet.appendRow([cycleArray[i]]); 
+  }
+
+}
+
+
+
+function SaveCycleCount() {
+  
+  // DECLARE SHEET
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var locationsSheet = ss.getSheetByName("LOCATIONS");
+  var cycleSheet = ss.getSheetByName("CYCLE");
+  
+  var lastCycleRow = cycleSheet.getLastRow();
+  var lastLocationRow = locationsSheet.getLastRow();
+  
+  
+  for(var i = 5; i <= lastCycleRow; i++)
+  {
+     var location = cycleSheet.getRange(i, 1).getValue();
+     var inventory = cycleSheet.getRange(i, 2).getValue();
+     var cycleCount = cycleSheet.getRange(i, 3).getValue();
+     var percent = 0;
+     
+    if(inventory == 0 && cycleCount == 0)
+    {
+      var percent = 100;
+    }
+    else if(inventory > cycleCount)
+    {
+       var percent = Math.round((cycleCount / inventory) * 100);       
+    }
+    else if(inventory <= cycleCount)
+    {
+       var percent = Math.round((inventory / cycleCount) * 100);      
+    }
+    
+    for (var y = 2; y <= lastLocationRow; y++)
+    {
+       if(locationsSheet.getRange(y, 1).getValue() == location)
+       {
+          locationsSheet.getRange(y, 3).setValue(inventory);
+          locationsSheet.getRange(y, 4).setValue(cycleCount);
+          locationsSheet.getRange(y, 5).setValue(percent);
+       }      
+    }
+  }
+  
+  cycleSheet.getRange('A5:C1000').clear();
+  cycleSheet.getRange(1,2).clear();
+  
+  CalculateTotalPercent();
+}
+
+function CalculateTotalPercent() {
+  
+    // DECLARE SHEET
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var locationsSheet = ss.getSheetByName("LOCATIONS");
+  
+  var lastLocationRow = locationsSheet.getLastRow();
+  
+  var totalPercent = 0;
+  var totalCount = 0;
+  
+  for(var i = 2; i <= lastLocationRow; i++)
+  {
+    if(locationsSheet.getRange(i, 2).getValue() != '')
+    {
+       totalPercent = totalPercent + Number(locationsSheet.getRange(i,5).getValue());
+       totalCount = totalCount + 1
+    }  
+  }
+  
+  if(totalPercent == 0 && totalCount == 0)
+  {
+    var percent = 100;
+  }
+  else
+  {
+    var percent = Math.round((totalPercent / totalCount));       
+  }
+  
+  locationsSheet.getRange(2,8).setValue(percent);
+}
+
+function ResetCycleCount() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var locationsSheet = ss.getSheetByName("LOCATIONS");
+  var cycleSheet = ss.getSheetByName("CYCLE");
+  
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('OK to Reset Cycle Count?', ui.ButtonSet.YES_NO);
+ 
+  
+  // Process the user's response.
+  if (response == ui.Button.YES) 
+  {
+    cycleSheet.getRange('A5:C1000').clear();
+    cycleSheet.getRange(1,2).clear();
+    locationsSheet.getRange(2,8).clear();
+    locationsSheet.getRange('B2:E1000').clear();
+  } 
+}

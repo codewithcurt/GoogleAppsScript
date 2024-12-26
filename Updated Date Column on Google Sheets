@@ -1,0 +1,14 @@
+function onEdit(e) {
+  
+  var range = e.range;
+  var spreadSheet = e.source;
+  var sheetName = spreadSheet.getActiveSheet().getName();
+  var row = range.getRow();  
+  
+  if(sheetName == 'DATA')
+  {
+    var new_date = new Date();
+    spreadSheet.getActiveSheet().getRange(row,6).setValue(new_date).setNumberFormat("MM/dd/yyyy hh:mm:ss A/P"); 
+  }
+  
+}

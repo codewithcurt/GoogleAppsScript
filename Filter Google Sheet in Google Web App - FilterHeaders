@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <h1>Web App Filter Headers</h1>
+    <?var tableData = getSheetData();?>
+    <?var url = getUrl();?>
+    <form method="post" action="<?= url ?>" >
+    <label>Color</label><br>
+    <input type="text" name="color" value="<?= color ?>" /><br>
+    <label>Miles</label><br>
+    <input type="text" name="miles" value="<?= miles ?>" /><br>
+    <input type="submit" name="searchButton" value="Search" /><br>
+    </form><br>
+    
+   <? if(color != '' || miles != '')
+    {
+        var output_array = [];
+        tableData.forEach(function(value, index) {
+        
+          if(index == 0)
+          {
+            output_array.push(value);
+          }
+          else if(index > 0 && color != '' && miles != '')
+          {
+            if(value[0].toLowerCase() == color.toLowerCase() && value[2] == miles)
+            {
+              output_array.push(value);
+             }
+            }
+            else if(index > 0 && color != '')
+            {
+              if(value[0].toLowerCase() == color.toLowerCase())
+              {                       
+                output_array.push(value);
+              }            
+            }
+            else if(index > 0 && miles != '')
+            {
+              if(value[2] == miles)
+              {                       
+                output_array.push(value);
+              }           
+            }                           
+        });
+    }
+    else
+    {
+      var output_array = tableData;    
+    }  ?>
+    
+    
+    
+    <table border="1" cellpadding="5px" >
+    <?for(var i = 0; i < output_array.length; i++) { ?>
+      <?if(i == 0) { ?>
+        <tr>
+        <?for(var j = 0; j < output_array[i].length; j++) { ?>
+        <th><?= output_array[i][j] ?></th>
+        <? } ?>
+        </tr>
+      <? } else { ?>
+        <tr>
+        <? for(var j = 0; j < output_array[i].length; j++) { ?>
+          <td><?= output_array[i][j] ?></td>
+          <? } ?>
+        </tr>
+      <? } ?>
+    <? } ?>
+    </table>
+
+    
+  </body>
+</html>

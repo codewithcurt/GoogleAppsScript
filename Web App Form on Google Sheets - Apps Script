@@ -1,0 +1,11 @@
+function doGet(e) {
+  return HtmlService.createHtmlOutputFromFile('WebApp');
+}
+
+function AddRecord(firstname, lastname) {
+  var url = 'https://docs.google.com/spreadsheets/d/1VBlXysszU9GwwKQ41IuG2-A-Z0SMOr0OVKA-_ACH-P0/edit#gid=0';
+  var ss= SpreadsheetApp.openByUrl(url);
+  var webAppSheet = ss.getSheetByName("Sheet1");
+  webAppSheet.appendRow([firstname, lastname, new Date()]);
+  
+}

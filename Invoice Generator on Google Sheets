@@ -1,0 +1,214 @@
+function AddItem()
+{
+  
+  //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE MENU SHEET          
+  var invoiceSheet = ss.getSheetByName("INVOICES");
+  var itemSheet = ss.getSheetByName("ITEMS");
+  
+  //GET NEXT ROW OF INVOICE SHEET
+  var lastrowInvoice = invoiceSheet.getLastRow() + 1;
+  
+  //GET LAST ROW OF ITEM SHEET
+  var lastrowItem = itemSheet.getLastRow();
+  
+  // GET VALUE OF PART AND QUANTITY
+  var part = invoiceSheet.getRange('B13').getValue();
+  var quantity = invoiceSheet.getRange('B14').getValue();
+  
+  // GET UNIT PRICE FROM ITEM SHEET
+  for(var i = 2; i <= lastrowItem; i++)
+  {
+    if(part == itemSheet.getRange(i, 1).getValue())
+    {
+      var unitCost = itemSheet.getRange(i, 2).getValue();
+    }
+  }
+  
+  // POPULATE INVOICE SHEET
+  invoiceSheet.getRange(lastrowInvoice, 1).setValue(part);
+  invoiceSheet.getRange(lastrowInvoice, 2).setValue(quantity);
+  invoiceSheet.getRange(lastrowInvoice, 3).setValue(unitCost).setNumberFormat("$#,###.00");
+  
+}
+
+
+function createInvoice()
+{
+  //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE MENU SHEET          
+  var invoiceSheet = ss.getSheetByName("INVOICES");
+  var customerSheet = ss.getSheetByName("CUSTOMERS");
+  var settingSheet = ss.getSheetByName("SETTINGS");
+  var printSheet = ss.getSheetByName("PRINT");
+  
+  //GET VALUES
+  var name = invoiceSheet.getRange(6,2).getValue();
+  var payable_to = invoiceSheet.getRange(7,2).getValue();
+  var project_name = invoiceSheet.getRange(8,2).getValue();
+  var invoice_number = settingSheet.getRange(1,2).getValue();
+  var next_invoice_number = invoice_number + 1;
+  settingSheet.getRange(1,2).setValue(next_invoice_number);
+  
+  var due_date = invoiceSheet.getRange(9,2).getValue();  
+  var note = invoiceSheet.getRange(10,2).getValue();
+  var adjustment = invoiceSheet.getRange(11,2).getValue();
+  
+  
+  // GET CUSTOER LAST ROW
+  var lastrowCustomer = customerSheet.getLastRow();
+  
+  // GET CUSTOMER FIELDS
+  for(var i = 2; i <= lastrowCustomer; i++)
+  {
+    if(name == customerSheet.getRange(i, 1).getValue())
+    {
+      var companyName = customerSheet.getRange(i,2).getValue();
+      var streetAddress = customerSheet.getRange(i,3).getValue();
+      var city = customerSheet.getRange(i,4).getValue();
+      var state = customerSheet.getRange(i,5).getValue();
+      var zip = customerSheet.getRange(i,6).getValue();
+    }
+  }
+  
+  // SET INVOICE DATE
+  var currentDate = new Date();
+  var currentMonth = currentDate.getMonth()+1;
+  var currentYear = currentDate.getFullYear();
+  var date = currentMonth.toString() + '/' + currentDate.getDate().toString() + '/' + currentYear.toString();
+  
+  
+  // GET LAST ROW OF PRINT SHEET
+  var lastrowPrint = printSheet.getLastRow();
+  
+  // FIND HOW MANY ITEMS ROWS TO DELETE
+  var x_count = 0
+  for(var v = 19; v <= lastrowPrint; v++)
+  {
+    
+    if(printSheet.getRange(v, 2).getValue() != 'Notes:')
+    {  
+      x_count++;
+    }
+    else
+    {
+      break;
+    }
+  }
+  
+  //Logger.log(x_count);
+  
+  var lastrowPrint = 19 + x_count;
+  
+  //Logger.log(lastrowPrint);
+  
+  // DELETE ITEMS ROWS FROM INVOICE
+  if((lastrowPrint - 19) != 0)
+  {
+    printSheet.deleteRows(19, lastrowPrint - 19);
+  }  
+  
+  // SET VALUES ON INVOICE
+  printSheet.getRange('B9').setValue('Submitted to ' + date).setFontFamily('Roboto').setFontSize(12).setFontWeight("bold").setFontColor("#e01b84");
+  printSheet.getRange('B12').setValue(name).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('B13').setValue(companyName).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('B14').setValue(streetAddress).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('B15').setValue(city +', ' + state + ' ' + zip).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('D12').setValue(payable_to).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('D15').setValue(project_name).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('F12').setValue(invoice_number).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  printSheet.getRange('F15').setValue(due_date).setFontFamily('Roboto').setFontSize(10).setFontColor("3e01b84");
+  
+  printSheet.getRange('C19').setValue(note).setFontFamily('Roboto').setFontSize(10).setFontColor("#E01B84");
+  printSheet.getRange('G20').setValue(adjustment).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+  
+  
+  // GET LAST ROW OF INVOICE SHEET
+  var lastrowInvoice = invoiceSheet.getLastRow();
+
+  var z = 0;
+  var subTotal = 0;
+  for(var y = 17; y <= lastrowInvoice; y++)
+  {
+    //INSERT ROW ON PRINT SHEET
+    printSheet.insertRowsAfter(18 + z, 1);
+    
+    //GET ITEM VALUES FROM INVOICE SHEET
+    var part = invoiceSheet.getRange(y, 1).getValue();
+    var quantity = invoiceSheet.getRange(y, 2).getValue();
+    var unitPrice = invoiceSheet.getRange(y, 3).getValue();
+    
+    // PRICE TOTALS
+    var totalPrice = quantity * unitPrice;
+    subTotal = subTotal + totalPrice;
+    
+    // POPULATE TOTALS ON PRINT SHEET
+    printSheet.getRange(18 + z + 1, 2).setValue(part).setFontFamily('Roboto').setFontSize(10).setFontColor("black");
+    printSheet.getRange(18 + z + 1, 5).setValue(quantity).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+    printSheet.getRange(18 + z + 1, 6).setValue(unitPrice).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+    printSheet.getRange(18 + z + 1, 7).setValue(totalPrice).setFontFamily('Roboto').setFontSize(10).setFontColor("#e01b84");
+    
+    z++;
+  }
+  
+  // SET TOTAL
+  printSheet.getRange(18 + z + 1, 7).setValue(subTotal).setNumberFormat("$#,###.00").setFontFamily('Roboto').setFontSize(10).setFontColor("black");
+  
+  var totalInvoice = subTotal + adjustment;
+  
+  // CALL INVOICE LOG
+  InvoiceLog(invoice_number, name, date, due_date, totalInvoice)
+
+}
+
+function InvoiceLog(invoice_number, name, date, due_date, totalInvoice)
+{
+  
+   //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE INVOICE LOG SHEET          
+  var invoiceLogSheet = ss.getSheetByName("INVOICE LOG"); 
+  
+  //GET LAST ROW OF INVOICE LOG SHEET
+  var nextRowInvoice = invoiceLogSheet.getLastRow() + 1;
+  
+  //POPULATE INVOICE LOG
+  invoiceLogSheet.getRange(nextRowInvoice, 1).setValue(invoice_number);
+  invoiceLogSheet.getRange(nextRowInvoice, 2).setValue(name);
+  invoiceLogSheet.getRange(nextRowInvoice, 3).setValue(date);
+  invoiceLogSheet.getRange(nextRowInvoice, 4).setValue(due_date);
+  invoiceLogSheet.getRange(nextRowInvoice, 5).setValue(totalInvoice);
+
+
+
+}
+
+function ClearInvoice()
+{
+    //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE INVOICE SHEET          
+  var invoiceSheet = ss.getSheetByName("INVOICES");
+  
+  
+  //SET VALUES TO NOTHING
+  invoiceSheet.getRange(6,2).setValue("");
+  invoiceSheet.getRange(7,2).setValue("");
+  invoiceSheet.getRange(8,2).setValue("");  
+  invoiceSheet.getRange(9,2).setValue("");  
+  invoiceSheet.getRange(10,2).setValue("");
+  invoiceSheet.getRange(11,2).setValue("");  
+  invoiceSheet.getRange(13,2).setValue("");  
+  invoiceSheet.getRange(14,2).setValue("");
+  
+  //CLEAR ITEMS
+  invoiceSheet.getRange("A17:C1000").clear();
+
+}
+

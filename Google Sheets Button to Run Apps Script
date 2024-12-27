@@ -1,0 +1,3 @@
+function myButton() {
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName("MAIN").getRange('A1:A1').setValue("CURT");
+}

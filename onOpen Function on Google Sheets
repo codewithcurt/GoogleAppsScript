@@ -1,0 +1,18 @@
+function onOpen(e) {
+  
+  // Add a custom menu to the spreadsheet.
+  SpreadsheetApp.getUi() // Or DocumentApp, SlidesApp, or FormApp.
+      .createMenu('Custom Menu')
+      .addItem('First item', 'menuItem1')
+      .addToUi();
+  
+  SpreadsheetApp.getActiveSpreadsheet().getSheetByName('OPEN').getRange(1,2).setValue('NOW');
+  
+}
+
+function menuItem1() {
+  
+ SpreadsheetApp.getActiveSpreadsheet().getSheetByName('OPEN').getRange(1,1).setValue('CURT'); 
+  
+  
+}

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <script>
+    function AddRow()
+    {
+    var name = document.getElementById("name").value;
+    google.script.run.AddRecord(name);
+    }
+    </script>
+  </head>
+  <body>
+    Name:  <input type="text" id="name" />
+    <input type="button" value="Add" onclick="AddRow()" />
+  </body>
+</html>

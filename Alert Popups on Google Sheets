@@ -1,0 +1,43 @@
+function alert1() {
+  
+  SpreadsheetApp.getUi().alert('Hello, World');
+  
+}
+
+function alert2() {
+  
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('OK to Test Alert?', ui.ButtonSet.YES_NO);
+  
+  var range = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Alert").getRange('A8:A8');
+  
+  // Process the user's response.
+  if (response == ui.Button.YES) 
+  {
+    range.setValue("YES");
+  } 
+  else if (response == ui.Button.NO) 
+  {
+    range.setValue("NO");
+  }
+  
+}
+
+function alert3() {
+  
+  var ui = SpreadsheetApp.getUi();
+  var response = ui.alert('Testing Alert', 'Do you wish to proceed?', ui.ButtonSet.OK_CANCEL);
+  
+  var range = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Alert").getRange('A8:A8');
+  
+  // Process the user's response.
+  if (response == ui.Button.OK) 
+  {
+    range.setValue("OK");
+  } 
+  else if (response == ui.Button.CANCEL)
+  {
+    range.setValue("CANCEL");
+  }
+  
+}

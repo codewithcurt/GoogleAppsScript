@@ -1,0 +1,30 @@
+function AddRecord(name) {
+  
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var mainSheet = ss.getSheetByName("MAIN");
+  mainSheet.appendRow([name, new Date()]);
+  
+}
+
+function startForm()
+{
+ var form = HtmlService.createHtmlOutputFromFile('AddForm');
+ SpreadsheetApp.getUi().showModalDialog(form, 'Add Record');
+  
+  
+}
+
+function addMenu()
+{
+ var menu = SpreadsheetApp.getUi().createMenu('Custom');
+ menu.addItem('Add Record Form', 'startForm');
+ menu.addToUi();
+  
+}
+
+function onOpen(e)
+{
+  
+ addMenu(); 
+}
+

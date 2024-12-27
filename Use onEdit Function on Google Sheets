@@ -1,0 +1,14 @@
+function onEdit(e) {
+  
+  var range = e.range;
+  var spreadSheet = e.source;
+  var sheetName = spreadSheet.getActiveSheet().getName();
+  var column = range.getColumn();
+  var row = range.getRow();
+  var inputValue = e.value;
+  
+  if(sheetName == 'ONEDIT' && column == 1 && row == 1)
+  {  
+     SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ONEDIT').getRange('A2').setValue([inputValue]);    
+  } 
+}

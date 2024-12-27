@@ -1,0 +1,21 @@
+function myFunction() {
+  
+  var ss= SpreadsheetApp.getActiveSpreadsheet();
+  var mainSheet = ss.getSheetByName("MAIN");
+  
+  mainSheet.getRange('A1:A3').clear();
+  
+  var URL_STRING = "https://api.jokes.one/jod";
+  
+  var response = UrlFetchApp.fetch(URL_STRING);
+  var json = response.getContentText();
+  var data = JSON.parse(json);
+  
+  var joke = data.contents.jokes[0].joke.text;
+  var copyright = data.contents.copyright;
+  
+  mainSheet.getRange(1,1).setValue([joke]);
+  mainSheet.getRange(3,1).setValue([copyright]);
+  
+  
+}

@@ -1,0 +1,118 @@
+function clockIn() {
+  
+  //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE MAIN SHEET          
+  var mainSheet = ss.getSheetByName("MAIN");
+
+  //LAST ROW ON MAIN SHEET
+  var lastRow = mainSheet.getLastRow();
+
+  for (var j = 5; j <= lastRow; j++)
+  {
+    // CHECK CLOCK IN
+    if(mainSheet.getRange('B1:B1').getValue() ==  mainSheet.getRange(j, 1).getValue() && mainSheet.getRange(j,3).getValue() == '')
+    {
+      Browser.msgBox('Need to Clock Out before Clocking IN');
+      return;
+    }
+    
+  }
+  
+  // ADD CLOCK IN RECORD
+  mainSheet.getRange(lastRow+1,1).setValue(mainSheet.getRange('B1:B1').getValue()).setFontSize(12);
+  mainSheet.getRange(lastRow+1,2).setValue(new Date()).setNumberFormat("MM/dd/yyyy hh:mm:ss A/P").setHorizontalAlignment("left").setFontSize(12);
+  
+}
+
+
+function clockOut() {
+  
+  //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE MAIN SHEET          
+  var mainSheet = ss.getSheetByName("MAIN");
+
+  //LAST ROW ON MAIN SHEET
+  var lastRow = mainSheet.getLastRow();
+  
+  var foundRecord = false;
+
+  for (var j = 5; j <= lastRow; j++)
+  {
+    // FIND CLOCK IN RECORD
+    if(mainSheet.getRange('B1:B1').getValue() ==  mainSheet.getRange(j, 1).getValue() && mainSheet.getRange(j,3).getValue() == '')
+    {
+      // UPDATE CLOCK IN RECORD
+      mainSheet.getRange(j,3).setValue(new Date()).setNumberFormat("MM/dd/yyyy hh:mm:ss A/P").setHorizontalAlignment("left").setFontSize(12);
+      var totalTime = (mainSheet.getRange(j,3).getValue() - mainSheet.getRange(j,2).getValue()) /(60*60*1000);
+      mainSheet.getRange(j,4).setValue(totalTime.toFixed(2)).setNumberFormat("#0.00").setHorizontalAlignment("left").setFontSize(12);  
+      foundRecord = true;     
+    }
+    
+  }
+  
+  // IF NO CLOCK IN RECORD
+  if(foundRecord == false)
+  {
+    Browser.msgBox('Need to Clock In First');
+    return;
+  }
+  
+  // CALL TOTAL HOURS
+  TotalHours();
+  
+}
+
+function TotalHours()
+{
+  
+  //DEFINE ALL ACTIVE SHEETS
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  //DEFINE MAIN SHEET          
+  var mainSheet = ss.getSheetByName("MAIN");
+
+  //LAST ROW ON MAIN SHEET
+  var lastRow = mainSheet.getLastRow();
+  
+  //DEFINE ARRAY
+  var totals = [];
+  
+  //LOOP THROUGH ALL RATES
+  for (var j = 5; j <= lastRow; j++)
+  {
+    var rate = mainSheet.getRange(j, 4).getValue();
+    var name = mainSheet.getRange(j, 1).getValue();
+    var foundRecord = false;
+    
+    for(var i = 0; i < totals.length; i++)
+    {
+       //FOUND RECORD ADD TO TOTAL
+       if(name == totals[i][0] && rate != '')
+       {         
+         totals[i][1] =  totals[i][1] + rate;
+         foundRecord = true;
+       }
+    }
+    
+    //ADD NEW RECORD, EXISTING RECORD NOT FOUND
+    if(foundRecord == false && rate != '')
+    {
+      totals.push([name, rate]);
+    }
+    
+  }
+  
+  //CLEAR DATA
+  mainSheet.getRange("F5:G1000").clear();
+  
+  //DISPLAY TOTALS
+  for(var i = 0; i < totals.length; i++)
+  {
+    mainSheet.getRange(5+i,6).setValue(totals[i][0]).setFontSize(12);
+    mainSheet.getRange(5+i,7).setValue(totals[i][1]).setFontSize(12);  
+  } 
+}

@@ -1,0 +1,30 @@
+function CopyRow() {
+  
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  var menuSheet = ss.getSheetByName("Menu");
+  var inventorySheet = ss.getSheetByName("Inventory");
+  
+  menuSheet.getRange("A5:C1000").clear();
+  
+  var partNumber = menuSheet.getRange(1,1).getValue();
+  
+  var lastRow = inventorySheet.getLastRow() + 1;
+  var foundRecord = false;
+  
+  for(var j = 2; j <  lastRow; j++)
+  {
+    if(inventorySheet.getRange(j,1).getValue() ==partNumber)
+    {
+      var nextRow = menuSheet.getLastRow() +1;
+      var getCopyRange = inventorySheet.getRange('A' + j + ':C' + j);
+      getCopyRange.copyTo(menuSheet.getRange(nextRow, 1));
+      foundRecord = true; 
+    }
+  }
+  
+  if(foundRecord == false)
+  {
+    menuSheet.getRange(5,1).setValue(['(NO RECORDS FOUND)']); 
+  }
+}

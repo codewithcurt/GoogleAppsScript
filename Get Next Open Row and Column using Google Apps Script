@@ -1,0 +1,26 @@
+function lastRow() 
+{
+  var sheet1 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+  var lastrow = sheet1.getLastRow() + 1;
+  sheet1.getRange(lastrow, 1).setValue('CURT');
+}
+
+function lastColumn() 
+{
+
+  var sheet1 = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
+  var lastrow = sheet1.getLastRow();
+
+  for(var i = 1; i <= lastrow; i++)
+  { 
+    var column = 1;
+
+    while(sheet1.getRange(i,column).isBlank() == false)
+    {     
+     column = column + 1;      
+    }   
+    
+    sheet1.getRange(i, column).setValue('CURT');   
+  }
+
+}

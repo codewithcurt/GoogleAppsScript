@@ -1,0 +1,13 @@
+//DEFINE ALL ACTIVE SHEETS
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+//DEFINE MENU SHEET          
+var menuSheet = ss.getSheetByName("Menu");
+var partSheet = ss.getSheetByName("Parts");
+ 
+//PART DROPDOWN
+var partCell = menuSheet.getRange('A4'); 
+var partLastRow = partSheet.getLastRow();
+var partRange = partSheet.getRange('A1:A' + partLastRow);
+var partRule = SpreadsheetApp.newDataValidation().requireValueInRange(partRange).build();
+partCell.setDataValidation(partRule);
